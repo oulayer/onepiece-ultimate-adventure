@@ -160,15 +160,15 @@ public class CharacterScreen extends Screen {
         int colW = (cw - 6) / 2;
         for (int i = 0; i < stats.length; i++) {
             PlayerStat s = stats[i];
-            int cx = x + (i % 2) * (colW + 6), cy = y + 14 + (i / 2) * 44;
-            card(g, cx, cy, colW, 40, 0xFF000000 | s.color);
+            int cx = x + (i % 2) * (colW + 6), cy = y + 14 + (i / 2) * 47;
+            card(g, cx, cy, colW, 44, 0xFF000000 | s.color);
             g.fill(cx + 4, cy + 4, cx + 18, cy + 18, 0xFF000000 | s.color);
             g.drawCenteredString(font, s.name().substring(0, 1), cx + 11, cy + 7, 0xFF101010);
             g.drawString(font, s.displayName(), cx + 22, cy + 4, TEXT, false);
             String v = p.get(s) + "/" + PlayerStat.MAX_POINTS;
             small(g, v, cx + 22, cy + 14, MUTED);
             bar(g, cx + 4, cy + 22, colW - 30, 3, p.get(s) / (float) PlayerStat.MAX_POINTS, 0xFF000000 | s.color);
-            wrapSmall(g, s.description(), cx + 4, cy + 28, colW - 30, MUTED, 1);
+            wrapSmall(g, s.description(), cx + 4, cy + 27, colW - 8, MUTED, 2);
             boolean can = p.unspentPoints() > 0 && p.get(s) < PlayerStat.MAX_POINTS;
             int bx = cx + colW - 22, byy = cy + 12;
             boolean hover = can && in(mx, my, bx, byy, 18, 18);
@@ -178,11 +178,11 @@ public class CharacterScreen extends Screen {
                 int n = hasShiftDown() ? Math.min(5, p.unspentPoints()) : 1;
                 for (int k = 0; k < n; k++) OPNetwork.sendToServer(new SpendStatPacket(s));
             });
-            if (in(mx, my, cx, cy, colW, 40)) tooltip = font.split(s.description(), 200);
+            if (in(mx, my, cx, cy, colW, 44)) tooltip = font.split(s.description(), 200);
         }
 
         // derived stats
-        int ry = y + 14 + ((stats.length + 1) / 2) * 44 + 2;
+        int ry = y + 14 + ((stats.length + 1) / 2) * 47 + 1;
         card(g, x, ry, cw, ch - (ry - y), 0xFF3A3A46);
         g.drawString(font, Component.translatable("screen.onepiece.derived"), x + 6, ry + 5, GOLD, false);
         String[] lines = {
@@ -250,12 +250,22 @@ public class CharacterScreen extends Screen {
         var keys = bar == AbilityBars.HAKI ? KeyBindings.HAKI : KeyBindings.ABILITIES;
         String info = locked ? a.requirementLabel() : "[" + KeyBindings.shortName(keys[slot]) + "]";
         int nx = x + is + 8;
-        String name = font.plainSubstrByWidth(a.displayName().getString(), cw - (nx - x) - font.width(info) - 6);
-        g.drawString(font, name, nx, y + 3, locked ? MUTED : TEXT, false);
-        g.drawString(font, info, x + cw - 4 - font.width(info), y + 3, locked ? 0xFFAA5555 : GOLD, false);
+        boolean compact = cw < 150; // narrow column: key goes to the second line so the name fits
         String meta = tr("ability_type.onepiece." + a.activation().name().toLowerCase()) + " · " + (int) a.energyCost()
                 + (a.resource() == com.onepiece.ultimate.ability.AbilityResource.HAKI ? " HK" : " EN") + " · " + String.format("%.1fs", a.cooldown() / 20f);
-        small(g, meta, nx, y + 14, MUTED);
+        int nameW = cw - (nx - x) - (compact ? 4 : font.width(info) + 6);
+        String name = font.plainSubstrByWidth(a.displayName().getString(), nameW);
+        if (compact && font.width(a.displayName().getString()) > nameW) {
+            small(g, font.plainSubstrByWidth(a.displayName().getString(), (int) (nameW / 0.75f)), nx, y + 4, locked ? MUTED : TEXT);
+        } else {
+            g.drawString(font, name, nx, y + 3, locked ? MUTED : TEXT, false);
+        }
+        if (compact) {
+            small(g, info + " " + meta, nx, y + 14, locked ? 0xFFAA5555 : MUTED);
+        } else {
+            g.drawString(font, info, x + cw - 4 - font.width(info), y + 3, locked ? 0xFFAA5555 : GOLD, false);
+            small(g, meta, nx, y + 14, MUTED);
+        }
         if (hover) {
             List<FormattedCharSequence> tip = new ArrayList<>(font.split(a.displayName().copy().withStyle(net.minecraft.ChatFormatting.GOLD), 220));
             tip.addAll(font.split(a.description(), 220));

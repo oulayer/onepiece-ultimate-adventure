@@ -64,7 +64,8 @@ public final class ArmamentVisuals {
                 ACTIVATED_AT.put(p.getId(), justStarted ? p.tickCount : p.tickCount - 1000);
             }
             float pr = progress(p, 0);
-            if (pr < 1f) {
+            boolean ownView = p == mc.player && mc.options.getCameraType().isFirstPerson();
+            if (pr < 1f && !ownView) {
                 var r = p.getRandom();
                 for (int i = 0; i < 3; i++) {
                     double yaw = Math.toRadians(p.yBodyRot);
@@ -99,11 +100,12 @@ public final class ArmamentVisuals {
         float age = player.tickCount + partial;
 
         // 1. flame aura (strong during activation, faint edge afterwards)
-        float flame = pr < 1f ? Mth.sin(pr * Mth.PI) * 1.1f + (1f - pr) * 0.2f : 0.16f + 0.06f * Mth.sin(age * 0.35f);
+        // additive blending: colour is the brightness of the flames
+        float flame = pr < 1f ? Mth.sin(pr * Mth.PI) * 0.75f + (1f - pr) * 0.15f : 0.10f + 0.05f * Mth.sin(age * 0.35f);
         if (flame > 0.01f) {
             VertexConsumer swirl = buffers.getBuffer(RenderType.energySwirl(FLAME, (age * 0.011f) % 1f, (age * 0.035f) % 1f));
-            float inflate = 1.08f + 0.18f * Math.min(1f, flame);
-            for (ModelPart part : parts) renderScaled(part, ps, swirl, light, inflate, 0.7f * flame, 0.32f * flame, 1.0f * flame, 1f);
+            float inflate = 1.05f + 0.12f * Math.min(1f, flame);
+            for (ModelPart part : parts) renderScaled(part, ps, swirl, light, inflate, 0.42f * flame, 0.14f * flame, 0.8f * flame, 1f);
         }
 
         // 2. hardening to black, 3. polished gloss

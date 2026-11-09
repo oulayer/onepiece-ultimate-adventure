@@ -75,6 +75,7 @@ public final class ClientAutoTest {
 
     private static void refill() {
         server(sp -> OPCapabilities.get(sp).ifPresent(d -> {
+            sp.getInventory().clearContent(); // keep the hand empty (drops picked up from defeated mobs)
             d.setEnergy(d.maxEnergy());
             d.cooldowns().clear();
             d.markFull();

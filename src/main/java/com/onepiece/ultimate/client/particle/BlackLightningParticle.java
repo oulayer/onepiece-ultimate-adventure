@@ -68,18 +68,21 @@ public class BlackLightningParticle extends TextureSheetParticle {
                 Vec3 pa = origin.add(points[i]), pb = origin.add(points[i + 1]);
                 Vec3 seg = pb.subtract(pa);
                 Vec3 mid = pa.add(pb).scale(0.5);
+                float near = (float) Mth.clamp((mid.length() - 1.2) / 2.5, 0.0, 1.0);
+                if (near <= 0.01f) continue;
                 Vec3 side = seg.cross(mid).normalize().scale(w * (1f - 0.5f * i / points.length));
                 Vec3 lift = pass == 1 ? mid.normalize().scale(-0.01) : Vec3.ZERO; // core slightly closer to the camera
                 Vec3 c0 = pa.subtract(side).add(lift), c1 = pa.add(side).add(lift), c2 = pb.add(side).add(lift), c3 = pb.subtract(side).add(lift);
                 // both windings: particles render with back-face culling and the ribbon's facing varies
-                put(vc, c0, u0, v0, r, g, b, a);
-                put(vc, c1, u0, v1, r, g, b, a);
-                put(vc, c2, u1, v1, r, g, b, a);
-                put(vc, c3, u1, v0, r, g, b, a);
-                put(vc, c3, u1, v0, r, g, b, a);
-                put(vc, c2, u1, v1, r, g, b, a);
-                put(vc, c1, u0, v1, r, g, b, a);
-                put(vc, c0, u0, v0, r, g, b, a);
+                float an = a * near;
+                put(vc, c0, u0, v0, r, g, b, an);
+                put(vc, c1, u0, v1, r, g, b, an);
+                put(vc, c2, u1, v1, r, g, b, an);
+                put(vc, c3, u1, v0, r, g, b, an);
+                put(vc, c3, u1, v0, r, g, b, an);
+                put(vc, c2, u1, v1, r, g, b, an);
+                put(vc, c1, u0, v1, r, g, b, an);
+                put(vc, c0, u0, v0, r, g, b, an);
             }
         }
     }

@@ -246,9 +246,9 @@ S = 64
 yy, xx = _np.mgrid[0:S, 0:S] / S
 rnd = random.Random(11)
 field = _np.zeros((S, S))
-for octave in range(1, 5):  # tileable sum of waves at several scales
+for octave in range(1, 5):  # tileable sum of waves at several scales – fine detail so small UV regions still flicker
     for _ in range(3):
-        fx, fy = rnd.randint(-octave * 2, octave * 2), rnd.randint(1, octave * 3)
+        fx, fy = rnd.randint(-octave * 6, octave * 6), rnd.randint(4, octave * 9)
         ph = rnd.uniform(0, 6.28)
         field += _np.sin(2 * _np.pi * (fx * xx + fy * yy) + ph + _np.sin(2 * _np.pi * 2 * yy) * 1.2) / octave
 field = (field - field.min()) / (field.max() - field.min())
