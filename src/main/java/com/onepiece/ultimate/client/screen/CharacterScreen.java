@@ -223,12 +223,23 @@ public class CharacterScreen extends Screen {
         if (in(mx, my, x, y, cw, 44)) tooltip = font.split(fruit.description(), 220);
 
         List<Ability> list = fruit.abilities();
+        List<Ability> forms = fruit.transformations();
         int colW = (cw - 6) / 2;
-        int rows = (list.size() + 1) / 2;
-        int cardH = Math.min(32, (ch - 50) / Math.max(1, rows) - 3);
+        int rows = (list.size() + 1) / 2 + (forms.size() + 1) / 2;
+        int header = forms.isEmpty() ? 0 : 12;
+        int cardH = Math.min(32, (ch - 50 - header) / Math.max(1, rows) - 3);
         for (int i = 0; i < list.size(); i++) {
             int ax = x + (i % 2) * (colW + 6), ay = y + 50 + (i / 2) * (cardH + 3);
             abilityCard(g, d, list.get(i), AbilityBars.FRUIT, i, ax, ay, colW, cardH, mx, my);
+        }
+        if (!forms.isEmpty()) {
+            int fy = y + 50 + ((list.size() + 1) / 2) * (cardH + 3);
+            g.drawString(font, Component.translatable("screen.onepiece.forms").getString() + "  [" + KeyBindings.shortName(KeyBindings.TRANSFORM) + "]",
+                    x, fy + 1, GOLD, false);
+            for (int i = 0; i < forms.size(); i++) {
+                int ax = x + (i % 2) * (colW + 6), ay = fy + header + (i / 2) * (cardH + 3);
+                abilityCard(g, d, forms.get(i), AbilityBars.TRANSFORM, i, ax, ay, colW, cardH, mx, my);
+            }
         }
     }
 
@@ -248,7 +259,8 @@ public class CharacterScreen extends Screen {
         g.blit(a.icon(), x + 4, y + (ch - is) / 2, is, is, 0, 0, 32, 32, 32, 32);
         g.setColor(1, 1, 1, 1);
         var keys = bar == AbilityBars.HAKI ? KeyBindings.HAKI : KeyBindings.ABILITIES;
-        String info = locked ? a.requirementLabel() : "[" + KeyBindings.shortName(keys[slot]) + "]";
+        String key = bar == AbilityBars.TRANSFORM ? KeyBindings.shortName(KeyBindings.TRANSFORM) : slot < keys.length ? KeyBindings.shortName(keys[slot]) : "?";
+        String info = locked ? a.requirementLabel() : "[" + key + "]";
         int nx = x + is + 8;
         boolean compact = cw < 150; // narrow column: key goes to the second line so the name fits
         String meta = tr("ability_type.onepiece." + a.activation().name().toLowerCase()) + " · " + (int) a.energyCost()

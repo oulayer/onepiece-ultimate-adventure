@@ -198,6 +198,108 @@ icon_future(f"{G}/haki_future_sight.png")
 icon_conqueror(f"{G}/haki_conqueror_wave.png")
 icon_conqueror(f"{G}/haki_conqueror_infusion.png", infusion=True)
 
+# ------------------------------------------------------------------ transformation icons
+E = f"{A}/entity"
+G4 = (35, 20, 30)
+WHITE = (250, 250, 250)
+icon_pistol(f"{G}/gomu_kong_gun.png", G4, jet=False)
+icon_gatling(f"{G}/gomu_kong_organ.png", G4)
+icon_bazooka(f"{G}/gomu_leo_bazooka.png", G4)
+icon_gigant(f"{G}/gomu_king_kong_gun.png")
+icon_pistol(f"{G}/gomu_jet_culverin.png", (120, 25, 45), jet=True)
+icon_gatling(f"{G}/gomu_black_mamba.png", (120, 25, 45), jet=True)
+icon_bazooka(f"{G}/gomu_king_cobra.png", (120, 25, 45), jet=True)
+icon_pistol(f"{G}/gomu_dawn_gun.png", WHITE)
+icon_whip(f"{G}/gomu_dawn_whip.png")
+icon_rocket(f"{G}/gomu_dawn_rocket.png")
+icon_gigant(f"{G}/gomu_bajrang_gun.png")
+
+def recolor(path, tint, mix=0.75):
+    im = Image.open(path).convert("RGBA"); px = im.load()
+    for y in range(im.size[1]):
+        for x in range(im.size[0]):
+            r, g, b, a = px[x, y]
+            if a: px[x, y] = tuple(int(c * (1 - mix) + t * mix) for c, t in zip((r, g, b), tint)) + (a,)
+    im.save(path)
+recolor(f"{G}/gomu_king_kong_gun.png", (60, 25, 30), 0.6)
+recolor(f"{G}/gomu_dawn_whip.png", WHITE, 0.6)
+recolor(f"{G}/gomu_dawn_rocket.png", WHITE, 0.6)
+recolor(f"{G}/gomu_bajrang_gun.png", WHITE, 0.55)
+
+def icon_form(path, body, accent, symbol):
+    img = canvas(); d = ImageDraw.Draw(img)
+    d.ellipse([12, 12, 116, 116], fill=body + (255,), outline=accent + (255,), width=7)
+    d.text((0, 0), "")
+    symbol(d)
+    finish(img, path, glow=accent)
+def sym_four(d):
+    d.line([(74, 34), (44, 76), (84, 76)], fill=(255, 80, 70), width=11)
+    d.line([(74, 34), (74, 96)], fill=(255, 80, 70), width=11)
+def sym_snake(d):
+    d.arc([36, 30, 76, 66], 90, 360, fill=(255, 80, 90), width=9)
+    d.arc([52, 60, 92, 98], 270, 180, fill=(255, 80, 90), width=9)
+    d.ellipse([84, 86, 98, 100], fill=(255, 80, 90))
+def sym_five(d):
+    for r in (20, 30):
+        d.arc([64 - r, 50 - r, 64 + r, 50 + r], 200, 340, fill=(255, 255, 255), width=5)
+    d.line([(46, 58), (82, 58)], fill=(60, 60, 60), width=8)
+    d.line([(46, 58), (46, 76)], fill=(60, 60, 60), width=8)
+    d.arc([40, 66, 86, 104], 270, 140, fill=(60, 60, 60), width=8)
+icon_form(f"{G}/gomu_boundman.png", (30, 15, 20), (230, 60, 50), sym_four)
+icon_form(f"{G}/gomu_snakeman.png", (40, 15, 25), (200, 40, 80), sym_snake)
+icon_form(f"{G}/gomu_gear_fifth.png", (240, 240, 245), (255, 255, 255), sym_five)
+
+def flame(d, cx, cy, s, col):
+    d.polygon([(cx, cy - s), (cx + s * 0.55, cy), (cx + s * 0.3, cy + s * 0.7), (cx - s * 0.3, cy + s * 0.7), (cx - s * 0.55, cy)], fill=col)
+BLUE = (70, 200, 255); DEEP = (20, 90, 220); GOLD = (255, 200, 60)
+def icon_phoenix_wings(path, full):
+    img = canvas(); d = ImageDraw.Draw(img)
+    for side in (-1, 1):
+        pts = [(64, 70)] + [(64 + side * (20 + k * 10), 70 - 34 + k * 8 + (k % 2) * 10) for k in range(5)] + [(64 + side * 12, 86)]
+        d.polygon(pts, fill=BLUE + (255,), outline=DEEP + (255,))
+    if full:
+        d.ellipse([52, 52, 76, 92], fill=DEEP); d.ellipse([56, 36, 72, 54], fill=DEEP); d.polygon([(64, 30), (70, 40), (58, 40)], fill=GOLD)
+        d.polygon([(64, 92), (52, 120), (64, 110), (76, 120)], fill=BLUE)
+    else:
+        d.ellipse([54, 40, 74, 60], fill=(255, 205, 160)); d.rectangle([56, 60, 72, 96], fill=(255, 255, 255))
+    finish(img, path, glow=BLUE)
+icon_phoenix_wings(f"{G}/phoenix_hybrid.png", False)
+icon_phoenix_wings(f"{G}/phoenix_full.png", True)
+def icon_simple(path, draw):
+    img = canvas(); d = ImageDraw.Draw(img); draw(d); finish(img, path, glow=BLUE)
+icon_simple(f"{G}/phoenix_talon.png", lambda d: ([d.line([(40, 30 + k * 6), (60 + k * 10, 96)], fill=GOLD, width=9) for k in range(3)], flame(d, 82, 70, 30, BLUE)))
+icon_simple(f"{G}/phoenix_flame_wave.png", lambda d: [d.arc([20 + k * 8, 20 + k * 8, 108 - k * 8, 108 - k * 8], 300, 60, fill=(BLUE if k % 2 else DEEP), width=9) for k in range(4)])
+icon_simple(f"{G}/phoenix_regeneration.png", lambda d: (flame(d, 64, 70, 48, BLUE), d.rectangle([58, 48, 70, 92], fill=(255, 255, 255)), d.rectangle([42, 64, 86, 76], fill=(255, 255, 255))))
+icon_simple(f"{G}/phoenix_dive.png", lambda d: (d.polygon([(64, 118), (36, 40), (64, 60), (92, 40)], fill=BLUE, outline=DEEP), flame(d, 64, 26, 20, DEEP)))
+
+# Phoenix Zoan fruit (16x16) and textures
+fruit((70, 190, 245), (25, 90, 200), (210, 245, 255), f"{A}/item/tori_tori_no_mi_phoenix.png")
+S = 64
+img = Image.new("RGBA", (S, S), (0, 0, 0, 0)); px = img.load()
+for y in range(S):
+    for x in range(S):
+        n = 0.5 + 0.5 * math.sin(x * 0.7 + math.sin(y * 0.5) * 2) * math.cos(y * 0.35)
+        r, g, b = int(40 + 90 * n), int(150 + 90 * n), 255
+        px[x, y] = (r, g, b, int(150 + 105 * n))
+d = ImageDraw.Draw(img)
+d.rectangle([48, 0, 63, 15], fill=GOLD + (255,))
+save(img, f"{E}/phoenix.png")
+
+# Gear Fourth markings on the skin UV map: red flame lines on body, arms and legs
+img = Image.new("RGBA", (64, 64), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+rnd = random.Random(4)
+def flames_in(x0, y0, x1, y1):
+    for k in range(2):
+        x = rnd.randint(x0, x1 - 1)
+        pts = [(x, y1 - 1)]
+        for yy in range(y1 - 2, y0 - 1, -2):
+            x = max(x0, min(x1 - 1, x + rnd.choice((-1, 0, 1))))
+            pts.append((x, yy))
+        d.line(pts, fill=(255, 255, 255, 255), width=1)
+for (x0, y0, x1, y1) in [(20, 20, 28, 32), (32, 20, 40, 32), (40, 20, 56, 32), (32, 52, 48, 64), (0, 20, 16, 32), (16, 52, 32, 64)]:
+    flames_in(x0, y0, x1, y1)
+save(img, f"{E}/gear_fourth_pattern.png")
+
 # ------------------------------------------------------------------ particles
 P = f"{A}/particle"
 for i in range(4):

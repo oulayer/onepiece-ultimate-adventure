@@ -120,6 +120,24 @@ def rubber_inflate(v):
     return norm(place(0.75, (0.0, air, 0.5), (0.05, squeak(0.6, 400 + 100 * v, 900 + 150 * v, rate=20 + 6 * v), 0.8),
                       (0.0, sine_sweep(90, 170, 0.7) * np.sin(np.pi * t(0.7) / 0.7), 0.25)), 0.75)
 
+def drum(f0=90, dur=0.35, bright=0.3):
+    tt = t(dur)
+    body = np.sin(2 * np.pi * np.cumsum(f0 * (1 + 0.8 * np.exp(-tt * 30))) / SR) * np.exp(-tt * 9)
+    skin = bandpass(noise(dur), 200, 1500) * np.exp(-tt * 40) * bright
+    return np.tanh(2 * (body + skin))
+
+def drums_of_liberation():
+    # "don, don, do-ko, don" – the heartbeat of Gear Fifth
+    hits = [(0.0, 85, 1.0), (0.32, 85, 0.9), (0.58, 110, 0.7), (0.70, 100, 0.7), (0.92, 80, 1.0)]
+    return norm(place(1.35, *[(o, drum(f, 0.4), g) for o, f, g in hits]), 0.9)
+
+def phoenix_cry(v):
+    tt = t(0.9)
+    f = (1700 + 200 * v) * (1 - 0.35 * tt / 0.9) * (1 + 0.04 * np.sin(2 * np.pi * 9 * tt))
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    tone = np.sin(ph + 1.8 * np.sin(ph * 0.5)) * np.sin(np.pi * tt / 0.9) ** 0.6
+    return norm(tone + 0.2 * highpass(noise(0.9), 3000) * np.sin(np.pi * tt / 0.9), 0.6)
+
 SOUNDS = {
     "combat/swing_light": lambda: whoosh(0.16, 600, 3500, 0.6),
     "combat/swing_heavy": lambda: whoosh(0.32, 250, 1800, 0.8),
@@ -139,6 +157,13 @@ SOUNDS = {
     "gomu/inflate": lambda: [rubber_inflate(v) for v in range(2)],
     "gomu/gear_second": lambda: norm(highpass(noise(1.1), 2500) * (np.abs(np.sin(np.pi * 3 * t(1.1) / 1.1)) ** 2) * np.exp(-t(1.1) * 1.2), 0.6),
     "gomu/bounce": lambda: [rubber_bounce(v) for v in range(2)],
+    "gomu/gear_fourth": lambda: norm(place(1.4, (0.0, rubber_inflate(1), 0.6), (0.55, thump(55, 0.8, 0.6), 1.0),
+                                           (0.55, lowpass(noise(0.8), 300) * np.exp(-t(0.8) * 3), 0.6)), 0.9),
+    "gomu/gear_fifth": drums_of_liberation,
+    "phoenix/flame": lambda: norm(lowpass(noise(1.0), 500 + 1500 * np.sin(np.pi * t(1.0) / 1.0)) * np.sin(np.pi * t(1.0) / 1.0)
+                                  + 0.4 * highpass(noise(1.0) * (rng.random(int(SR * 1.0)) > 0.995), 2000), 0.7),
+    "phoenix/cry": lambda: [phoenix_cry(v) for v in range(2)],
+    "phoenix/wing": lambda: whoosh(0.35, 150, 1200, 0.8),
     "destruction/rumble": lambda: norm(lowpass(noise(1.6), 160) * np.sin(np.pi * t(1.6) / 1.6) ** 0.6, 0.9),
     "fruit/eat": lambda: norm(sum(np.sin(2 * np.pi * f * t(1.0)) * np.exp(-((t(1.0) - d) ** 2) / 0.02) for f, d in
                                   [(392, 0.1), (523, 0.25), (659, 0.4), (784, 0.55), (1046, 0.7)]), 0.5),

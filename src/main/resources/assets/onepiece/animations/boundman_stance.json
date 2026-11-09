@@ -1,0 +1,181 @@
+{
+ "length": 16,
+ "loop": true,
+ "hold": false,
+ "blend_in": 4,
+ "blend_out": 3,
+ "priority": 10,
+ "root_pivot": 0.9,
+ "bones": {
+  "right_arm": {
+   "rotation": [
+    [
+     0,
+     -62,
+     -12,
+     24
+    ],
+    [
+     8,
+     -68,
+     -12,
+     26
+    ],
+    [
+     16,
+     -62,
+     -12,
+     24
+    ]
+   ]
+  },
+  "left_arm": {
+   "rotation": [
+    [
+     0,
+     -62,
+     12,
+     -24
+    ],
+    [
+     8,
+     -68,
+     12,
+     -26
+    ],
+    [
+     16,
+     -62,
+     12,
+     -24
+    ]
+   ]
+  },
+  "right_leg": {
+   "rotation": [
+    [
+     0,
+     -18,
+     0,
+     6
+    ]
+   ]
+  },
+  "left_leg": {
+   "rotation": [
+    [
+     0,
+     10,
+     0,
+     -6
+    ]
+   ]
+  },
+  "body": {
+   "rotation": [
+    [
+     0,
+     8,
+     0,
+     0
+    ]
+   ]
+  },
+  "fp_right": {
+   "rotation": [
+    [
+     0,
+     10,
+     -10,
+     0,
+     "in_out_quad"
+    ],
+    [
+     8,
+     10,
+     -10,
+     0,
+     "in_out_quad"
+    ],
+    [
+     16,
+     10,
+     -10,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     -1,
+     4,
+     0,
+     "in_out_quad"
+    ],
+    [
+     8,
+     -1,
+     4.5,
+     0,
+     "in_out_quad"
+    ],
+    [
+     16,
+     -1,
+     4,
+     0,
+     "in_out_quad"
+    ]
+   ]
+  },
+  "fp_left": {
+   "rotation": [
+    [
+     0,
+     10,
+     -10,
+     0,
+     "in_out_quad"
+    ],
+    [
+     8,
+     10,
+     -10,
+     0,
+     "in_out_quad"
+    ],
+    [
+     16,
+     10,
+     -10,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     -1,
+     4,
+     0,
+     "in_out_quad"
+    ],
+    [
+     8,
+     -1,
+     4.5,
+     0,
+     "in_out_quad"
+    ],
+    [
+     16,
+     -1,
+     4,
+     0,
+     "in_out_quad"
+    ]
+   ]
+  }
+ }
+}

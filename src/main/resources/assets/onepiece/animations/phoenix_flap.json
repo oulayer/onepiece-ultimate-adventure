@@ -1,0 +1,57 @@
+{
+ "length": 8,
+ "loop": false,
+ "hold": false,
+ "blend_in": 0.5,
+ "blend_out": 3,
+ "priority": 20,
+ "root_pivot": 0.9,
+ "bones": {
+  "right_arm": {
+   "rotation": [
+    [
+     0,
+     -15,
+     0,
+     95
+    ],
+    [
+     3,
+     -10,
+     0,
+     20,
+     "out_quad"
+    ],
+    [
+     8,
+     -15,
+     0,
+     85
+    ]
+   ]
+  },
+  "left_arm": {
+   "rotation": [
+    [
+     0,
+     -15,
+     0,
+     -95
+    ],
+    [
+     3,
+     -10,
+     0,
+     -20,
+     "out_quad"
+    ],
+    [
+     8,
+     -15,
+     0,
+     -85
+    ]
+   ]
+  }
+ }
+}

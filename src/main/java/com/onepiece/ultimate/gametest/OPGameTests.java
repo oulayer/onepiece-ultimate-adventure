@@ -48,6 +48,7 @@ public final class OPGameTests {
     private static final String ARENA = "arena";
     /** Relative y of the arena's stone floor (GameTest places structures one block above the test origin). */
     private static final int FLOOR = 1;
+    private static final int FORMS = com.onepiece.ultimate.ability.AbilityBars.TRANSFORM;
 
     // ------------------------------------------------------------------ helpers
 
@@ -147,7 +148,7 @@ public final class OPGameTests {
 
         check(h, AbilityManager.press(p, d, 0) == AbilityManager.Result.SUCCESS, "Pistol should fire");
         check(h, AbilityManager.press(p, d, 0) == AbilityManager.Result.COOLDOWN, "Pistol should be on cooldown");
-        check(h, AbilityManager.press(p, d, 6) == AbilityManager.Result.LOCKED, "Gigant Pistol must need mastery 45");
+        check(h, AbilityManager.press(p, d, 5) == AbilityManager.Result.LOCKED, "Gigant Pistol must need mastery 45");
 
         d.cooldowns().clear();
         d.setEnergy(0);
@@ -156,9 +157,9 @@ public final class OPGameTests {
         // Gear Second turns Pistol into Jet Pistol (variant shares the slot and cooldown)
         d.setMasteryXp(OPPlayerData.totalXpForMastery(30));
         d.setEnergy(d.maxEnergy());
-        check(h, AbilityManager.press(p, d, 5) == AbilityManager.Result.SUCCESS, "Gear Second should activate");
+        check(h, AbilityManager.press(p, d, FORMS, 0) == AbilityManager.Result.SUCCESS, "Gear Second should activate");
         check(h, AbilityManager.abilityInSlot(d, 0) == GomuAbilities.JET_PISTOL, "Pistol should resolve to Jet Pistol");
-        check(h, AbilityManager.press(p, d, 5) == AbilityManager.Result.TOGGLED_OFF, "Gear Second should toggle off");
+        check(h, AbilityManager.press(p, d, FORMS, 0) == AbilityManager.Result.TOGGLED_OFF, "Gear Second should toggle off");
         check(h, AbilityManager.abilityInSlot(d, 0) == GomuAbilities.PISTOL, "Pistol should be back to normal");
         h.succeed();
     }
@@ -283,7 +284,7 @@ public final class OPGameTests {
         d.setFruit(DevilFruits.GOMU_GOMU_ID);
         d.setMasteryXp(OPPlayerData.totalXpForMastery(30));
         d.setEnergy(d.maxEnergy());
-        check(h, AbilityManager.press(p, d, 5) == AbilityManager.Result.SUCCESS, "Gear Second should activate on land");
+        check(h, AbilityManager.press(p, d, FORMS, 0) == AbilityManager.Result.SUCCESS, "Gear Second should activate on land");
         p.updateFluidHeightAndDoFluidPushing();
         PlayerTicker.tick(p, d);
         check(h, d.seaWeakened(), "submerged fruit user should be weakened");
@@ -481,6 +482,127 @@ public final class OPGameTests {
         check(h, chicken2.hasEffect(ModEffects.STUNNED.get()), "the released wave should knock out the chicken");
         check(h, d.cooldowns().isCooling(HakiAbilities.CONQUEROR_WAVE.cooldownKey()), "wave should go on cooldown");
         DestructionManager.flush(h.getLevel());
+        h.succeed();
+    }
+
+    // ------------------------------------------------------------------ transformations (stage 7)
+
+    private static void skipActivation(OPPlayerData d) {
+        d.abilities.transformLockUntil = 0;
+    }
+
+    @GameTest(template = ARENA)
+    public static void gearFourthRules(GameTestHelper h) {
+        FakePlayer p = fake(h, 4.5, 2, 4.5, 0);
+        OPPlayerData d = data(h, p);
+        d.setFruit(DevilFruits.GOMU_GOMU_ID);
+        d.setMasteryXp(OPPlayerData.totalXpForMastery(70));
+        d.progression().set(PlayerStat.STAMINA, 100);
+        d.setEnergy(d.maxEnergy());
+        check(h, AbilityManager.press(p, d, FORMS, 1) == AbilityManager.Result.REFUSED, "Boundman needs Armament level 4");
+        setHaki(p, d, HakiType.ARMAMENT, 4);
+
+        check(h, AbilityManager.press(p, d, FORMS, 0) == AbilityManager.Result.SUCCESS, "Gear Second");
+        check(h, AbilityManager.press(p, d, 0) == AbilityManager.Result.BUSY, "the activation sequence must lock the user");
+        skipActivation(d);
+        float before = p.getBbHeight();
+        check(h, AbilityManager.press(p, d, FORMS, 1) == AbilityManager.Result.SUCCESS, "Boundman");
+        check(h, !d.isToggleActive(GomuAbilities.GEAR_SECOND.id()), "gears are exclusive: Gear Second must end");
+        check(h, d.isToggleActive(HakiAbilities.ARMAMENT.id()), "Boundman must coat the body with Armament");
+        check(h, AbilityManager.abilityInSlot(d, 0) == GomuAbilities.KONG_GUN, "Pistol must become Kong Gun");
+        check(h, AbilityManager.abilityInSlot(d, 5) == GomuAbilities.KING_KONG_GUN, "Gigant Pistol must become King Kong Gun");
+        check(h, p.getBbHeight() > before + 0.3f, "Boundman must enlarge the hitbox (" + before + " -> " + p.getBbHeight() + ")");
+        check(h, com.onepiece.ultimate.combat.DamageCalculator.transformationMultiplier(d) > 1.8f, "Boundman damage bonus missing");
+
+        skipActivation(d);
+        check(h, AbilityManager.press(p, d, FORMS, 1) == AbilityManager.Result.TOGGLED_OFF, "Boundman off");
+        check(h, Math.abs(p.getBbHeight() - before) < 0.01f, "hitbox must return to normal");
+        check(h, !d.isToggleActive(HakiAbilities.ARMAMENT.id()), "Armament must burn out with Gear Fourth");
+        d.cooldowns().clear();
+        check(h, AbilityManager.press(p, d, HAKI, 0) == AbilityManager.Result.EXHAUSTED, "Haki must be exhausted after Gear Fourth");
+        h.succeed();
+    }
+
+    @GameTest(template = ARENA, timeoutTicks = 80)
+    public static void snakemanFistHomes(GameTestHelper h) {
+        FakePlayer p = fake(h, 3.5, 2, 1.5, 0); // facing +Z
+        OPPlayerData d = data(h, p);
+        d.setFruit(DevilFruits.GOMU_GOMU_ID);
+        d.setMasteryXp(OPPlayerData.totalXpForMastery(70));
+        d.progression().set(PlayerStat.STAMINA, 100);
+        setHaki(p, d, HakiType.ARMAMENT, 4);
+        d.setEnergy(d.maxEnergy());
+        Husk target = target(h, 9.5, 2, 12.5); // ~29° off the aim line
+        float start = target.getHealth();
+        check(h, AbilityManager.press(p, d, FORMS, 2) == AbilityManager.Result.SUCCESS, "Snakeman");
+        skipActivation(d);
+        check(h, AbilityManager.abilityInSlot(d, 0) == GomuAbilities.JET_CULVERIN, "Pistol must become Jet Culverin");
+        check(h, AbilityManager.press(p, d, 0) == AbilityManager.Result.SUCCESS, "Jet Culverin refused");
+        h.onEachTick(() -> PlayerTicker.tick(p, d));
+        h.succeedWhen(() -> check(h, target.getHealth() < start, "the homing fist never reached the off-axis target"));
+    }
+
+    @GameTest(template = ARENA, timeoutTicks = 80)
+    public static void gearFifthRubberizes(GameTestHelper h) {
+        FakePlayer p = fake(h, 4.5, 2, 2.5, 0);
+        OPPlayerData d = data(h, p);
+        d.setFruit(DevilFruits.GOMU_GOMU_ID);
+        d.setMasteryXp(OPPlayerData.totalXpForMastery(100));
+        d.progression().set(PlayerStat.STAMINA, 100);
+        d.setEnergy(d.maxEnergy());
+        Husk target = target(h, 4.5, 2, 11.5);
+        check(h, AbilityManager.press(p, d, FORMS, 3) == AbilityManager.Result.SUCCESS, "Gear Fifth");
+        skipActivation(d);
+        check(h, AbilityManager.abilityInSlot(d, 0) == GomuAbilities.DAWN_GUN, "Pistol must become Dawn Gun");
+        check(h, AbilityManager.press(p, d, 0) == AbilityManager.Result.SUCCESS, "Dawn Gun refused");
+        h.onEachTick(() -> PlayerTicker.tick(p, d));
+        h.succeedWhen(() -> check(h, com.onepiece.ultimate.combat.ToonPhysics.isRubber(target), "the target was not turned to rubber"));
+    }
+
+    @GameTest(template = ARENA)
+    public static void phoenixRegeneration(GameTestHelper h) {
+        ServerPlayer p = mock(h, 4.5, 2, 4.5, 0);
+        OPPlayerData d = data(h, p);
+        d.setFruit(DevilFruits.TORI_PHOENIX_ID);
+        d.setEnergy(d.maxEnergy());
+        Husk husk = target(h, 4.5, 2, 6.5);
+        p.hurt(ModDamageTypes.source(h.getLevel(), ModDamageTypes.MARTIAL, husk), 8f);
+        check(h, p.getHealth() <= p.getMaxHealth() - 7.9f, "the hit should land first");
+        for (int i = 0; i < 10; i++) PlayerTicker.tick(p, d);
+        check(h, d.energy() < d.maxEnergy() - 1f, "regeneration must cost energy: " + d.energy());
+        for (int i = 0; i < 70; i++) PlayerTicker.tick(p, d);
+        check(h, p.getHealth() >= p.getMaxHealth() - 1.7f, "blue flames should regenerate most of the damage: " + p.getHealth());
+
+        // Armament Haki suppresses the flames
+        p.setHealth(p.getMaxHealth());
+        p.invulnerableTime = 0;
+        d.abilities.regenPool = 0;
+        FakePlayer attacker = fake(h, 4.5, 2, 7.5, 180);
+        OPPlayerData ad = data(h, attacker);
+        setHaki(attacker, ad, HakiType.ARMAMENT, 1);
+        check(h, AbilityManager.press(attacker, ad, HAKI, 0) == AbilityManager.Result.SUCCESS, "armament refused");
+        p.hurt(ModDamageTypes.source(h.getLevel(), ModDamageTypes.MARTIAL, attacker), 8f);
+        check(h, d.abilities.regenPool == 0f, "Haki-coated damage must not be regenerated");
+        h.succeed();
+    }
+
+    @GameTest(template = ARENA)
+    public static void phoenixForms(GameTestHelper h) {
+        FakePlayer p = fake(h, 4.5, 2, 4.5, 0);
+        OPPlayerData d = data(h, p);
+        d.setFruit(DevilFruits.TORI_PHOENIX_ID);
+        d.setMasteryXp(OPPlayerData.totalXpForMastery(30));
+        d.setEnergy(d.maxEnergy());
+        check(h, AbilityManager.press(p, d, FORMS, 0) == AbilityManager.Result.SUCCESS, "hybrid form");
+        skipActivation(d);
+        check(h, AbilityManager.press(p, d, FORMS, 1) == AbilityManager.Result.SUCCESS, "full form");
+        check(h, !d.isToggleActive(com.onepiece.ultimate.fruit.phoenix.PhoenixAbilities.HYBRID.id()), "zoan forms are exclusive");
+        check(h, p.getAbilities().mayfly && p.getAbilities().flying, "full phoenix must fly");
+        check(h, p.getBbHeight() < 1.3f, "full phoenix must have a smaller body: " + p.getBbHeight());
+        skipActivation(d);
+        check(h, AbilityManager.press(p, d, FORMS, 1) == AbilityManager.Result.TOGGLED_OFF, "full form off");
+        check(h, !p.getAbilities().mayfly, "flight must be removed afterwards");
+        check(h, p.getBbHeight() > 1.7f, "body size must be restored");
         h.succeed();
     }
 }

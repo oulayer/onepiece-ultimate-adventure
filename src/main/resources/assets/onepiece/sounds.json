@@ -129,6 +129,49 @@
       }
     ]
   },
+  "gomu.gear_fourth": {
+    "subtitle": "subtitles.onepiece.gomu.gear_fourth",
+    "sounds": [
+      {
+        "name": "onepiece:gomu/gear_fourth"
+      }
+    ]
+  },
+  "gomu.gear_fifth": {
+    "subtitle": "subtitles.onepiece.gomu.gear_fifth",
+    "sounds": [
+      {
+        "name": "onepiece:gomu/gear_fifth"
+      }
+    ]
+  },
+  "phoenix.flame": {
+    "subtitle": "subtitles.onepiece.phoenix.flame",
+    "sounds": [
+      {
+        "name": "onepiece:phoenix/flame"
+      }
+    ]
+  },
+  "phoenix.cry": {
+    "subtitle": "subtitles.onepiece.phoenix.cry",
+    "sounds": [
+      {
+        "name": "onepiece:phoenix/cry_1"
+      },
+      {
+        "name": "onepiece:phoenix/cry_2"
+      }
+    ]
+  },
+  "phoenix.wing": {
+    "subtitle": "subtitles.onepiece.phoenix.wing",
+    "sounds": [
+      {
+        "name": "onepiece:phoenix/wing"
+      }
+    ]
+  },
   "destruction.rumble": {
     "subtitle": "subtitles.onepiece.destruction.rumble",
     "sounds": [

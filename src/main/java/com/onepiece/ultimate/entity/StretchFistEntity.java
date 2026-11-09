@@ -150,9 +150,12 @@ public class StretchFistEntity extends Projectile {
         Vec3 vel = getDeltaMovement();
         if (homingTarget != null && homingTarget.isAlive() && !hitIds.contains(homingTarget.getId())) {
             Vec3 want = homingTarget.getBoundingBox().getCenter().subtract(center);
-            if (want.lengthSqr() > 1e-4) {
+            double dist = want.length();
+            if (dist > 1e-3) {
                 Vec3 cur = vel.normalize();
-                Vec3 dir = cur.add(want.normalize().subtract(cur).scale(turnRate)).normalize();
+                // terminal guidance: the closer the fist gets, the harder it turns, so it can't overshoot at Jet speed
+                double rate = dist < speed * 2.5 ? 1.0 : Math.min(1.0, turnRate * (1 + 8 / dist));
+                Vec3 dir = cur.add(want.scale(1 / dist).subtract(cur).scale(rate)).normalize();
                 vel = dir.scale(speed);
                 setDeltaMovement(vel);
                 lookAlong(dir);
