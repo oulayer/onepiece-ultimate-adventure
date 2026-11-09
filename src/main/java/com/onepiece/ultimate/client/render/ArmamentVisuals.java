@@ -99,16 +99,8 @@ public final class ArmamentVisuals {
         float pr = progress(player, partial);
         float age = player.tickCount + partial;
 
-        // 1. flame aura (strong during activation, faint edge afterwards)
-        // additive blending: colour is the brightness of the flames
-        float flame = pr < 1f ? Mth.sin(pr * Mth.PI) * 0.75f + (1f - pr) * 0.15f : 0.10f + 0.05f * Mth.sin(age * 0.35f);
-        if (flame > 0.01f) {
-            VertexConsumer swirl = buffers.getBuffer(RenderType.energySwirl(FLAME, (age * 0.011f) % 1f, (age * 0.035f) % 1f));
-            float inflate = 1.05f + 0.12f * Math.min(1f, flame);
-            for (ModelPart part : parts) renderScaled(part, ps, swirl, light, inflate, 0.42f * flame, 0.14f * flame, 0.8f * flame, 1f);
-        }
-
-        // 2. hardening to black, 3. polished gloss
+        // Order matters: the aura is an inflated copy that writes depth, so the solid coating must be drawn first.
+        // 1. hardening to black, 2. polished gloss
         float hard = smoothstep(0.3f, 1f, pr);
         if (hard > 0f) {
             VertexConsumer black = buffers.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation()));
@@ -117,6 +109,16 @@ public final class ArmamentVisuals {
             float shine = hard * (0.75f + 0.25f * Mth.sin(age * 0.12f));
             for (ModelPart part : parts) if (part.visible) part.render(ps, gloss, light, OverlayTexture.NO_OVERLAY, 0.92f, 0.9f, 1f, shine);
         }
+
+        // 3. flame aura on top (additive) (strong during activation, faint edge afterwards)
+        // additive blending: colour is the brightness of the flames
+        float flame = pr < 1f ? Mth.sin(pr * Mth.PI) * 0.75f + (1f - pr) * 0.15f : 0.10f + 0.05f * Mth.sin(age * 0.35f);
+        if (flame > 0.01f) {
+            VertexConsumer swirl = buffers.getBuffer(RenderType.energySwirl(FLAME, (age * 0.011f) % 1f, (age * 0.035f) % 1f));
+            float inflate = 1.05f + 0.12f * Math.min(1f, flame);
+            for (ModelPart part : parts) renderScaled(part, ps, swirl, light, inflate, 0.42f * flame, 0.14f * flame, 0.8f * flame, 1f);
+        }
+
     }
 
     private static void renderScaled(ModelPart part, PoseStack ps, VertexConsumer vc, int light, float s, float r, float g, float b, float a) {

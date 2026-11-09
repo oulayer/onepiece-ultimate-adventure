@@ -49,7 +49,11 @@ public final class ArmamentAbility extends HakiAbility {
         ServerFx.animation(p, "armament_activate");
         ServerFx.sound(ctx.level(), p.position(), ModSounds.HAKI_ARMAMENT.get(), 1f, 1f);
         Vec3 c = p.position().add(0, 1.1, 0);
-        ctx.level().sendParticles(new DustParticleOptions(new Vector3f(0.12f, 0.04f, 0.2f), 1.6f), c.x, c.y, c.z, 30, 0.4, 0.5, 0.4, 0.02);
+        // Burst for onlookers only: right in front of the user's own camera it would cover the screen.
+        var dust = new DustParticleOptions(new Vector3f(0.12f, 0.04f, 0.2f), 1.6f);
+        for (ServerPlayer viewer : ctx.level().players()) {
+            if (viewer != p) ctx.level().sendParticles(viewer, dust, false, c.x, c.y, c.z, 30, 0.4, 0.5, 0.4, 0.02);
+        }
         ctx.level().sendParticles(RingParticleOptions.ground(0x2A1040, 2.5f, 12), p.getX(), p.getY() + 0.1, p.getZ(), 1, 0, 0, 0, 0);
     }
 

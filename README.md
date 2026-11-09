@@ -60,6 +60,11 @@ Pesado no ar = **ataque de queda** com onda de choque e cratera proporcional à 
 
 Passivas: imune a raios, metade do dano contundente (lâminas cortam normalmente), sem dano de queda e quica em quedas altas. Na água do mar perde os poderes, gasta energia e afunda.
 
+## Primeira pessoa e menu
+- **Primeira pessoa:** com a mão vazia e o modo de combate (ou um poder) ativo, os dois braços aparecem e seguem as mesmas animações do corpo: guarda, jabs alternados, gancho, bloqueio cruzado, cargas, Bazooka, Gigant inflado e Haki. A pausa de impacto e as transições funcionam igual. Os revestimentos de Haki e do Gear Second também aparecem nos braços. Segurando um item, o jogo usa a renderização vanilla.
+- **Menu (`K`):** três abas (Status, Akuma no Mi e Haki), com prévia 3D do personagem que segue o mouse, cartões de atributos (shift-clique dá +5), atributos derivados, cartões de técnica com tooltip e cartões de Haki com níveis.
+- **Visual do Busoshoku:** na ativação, os braços cruzam na frente do rosto e chamas violeta animadas envolvem os membros. Depois eles endurecem num preto brilhante, com reflexos emissivos e uma borda violeta tremulando.
+
 ## Haki
 
 O Haki usa um medidor próprio (roxo na HUD), separado da energia, e evolui do nível 1 ao 10 **pelo uso**. O atributo **Domínio de Haki** aumenta o medidor, a regeneração, a potência e a velocidade de treino.

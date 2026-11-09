@@ -77,7 +77,7 @@ public final class GigantPistolAbility extends Ability {
         ctx.schedule(40, () -> {
             player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 160, 1, false, true, true));
             player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 160, 1, false, true, true));
-            level.sendParticles(ParticleTypes.POOF, player.getX(), player.getY() + 1, player.getZ(), 20, 0.4, 0.5, 0.4, 0.05);
+            level.sendParticles(ParticleTypes.POOF, player.getX(), player.getY() + 0.15, player.getZ(), 12, 0.5, 0.05, 0.5, 0.03);
         });
     }
 }

@@ -194,6 +194,9 @@ public final class ClientAutoTest {
         at(t + 215, () -> shot("fp_11_armament_guard"));
         at(t + 220, () -> combat(CombatAction.LIGHT));
         at(t + 223, () -> shot("fp_12_armament_jab"));
+        at(t + 228, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 234, () -> shot("fp_12b_armament_third_person"));
+        at(t + 236, () -> camera(CameraType.FIRST_PERSON));
         at(t + 240, ClientAutoTest::refill);
         at(t + 242, () -> press(4));
         at(t + 262, () -> shot("fp_13_bazooka_charge"));
