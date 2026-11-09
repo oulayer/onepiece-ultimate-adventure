@@ -75,7 +75,13 @@
     "subtitle": "subtitles.onepiece.gomu.stretch",
     "sounds": [
       {
-        "name": "onepiece:gomu/stretch"
+        "name": "onepiece:gomu/stretch_1"
+      },
+      {
+        "name": "onepiece:gomu/stretch_2"
+      },
+      {
+        "name": "onepiece:gomu/stretch_3"
       }
     ]
   },
@@ -83,7 +89,13 @@
     "subtitle": "subtitles.onepiece.gomu.snap",
     "sounds": [
       {
-        "name": "onepiece:gomu/snap"
+        "name": "onepiece:gomu/snap_1"
+      },
+      {
+        "name": "onepiece:gomu/snap_2"
+      },
+      {
+        "name": "onepiece:gomu/snap_3"
       }
     ]
   },
@@ -91,7 +103,10 @@
     "subtitle": "subtitles.onepiece.gomu.inflate",
     "sounds": [
       {
-        "name": "onepiece:gomu/inflate"
+        "name": "onepiece:gomu/inflate_1"
+      },
+      {
+        "name": "onepiece:gomu/inflate_2"
       }
     ]
   },
@@ -107,7 +122,10 @@
     "subtitle": "subtitles.onepiece.gomu.bounce",
     "sounds": [
       {
-        "name": "onepiece:gomu/bounce"
+        "name": "onepiece:gomu/bounce_1"
+      },
+      {
+        "name": "onepiece:gomu/bounce_2"
       }
     ]
   },

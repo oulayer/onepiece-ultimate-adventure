@@ -35,7 +35,7 @@ minecraft {
             property 'forge.enabledGameTestNamespaces', mod_id
             // ./gradlew runClient -Pautotest : scripted visual test (see ClientAutoTest)
             if (project.hasProperty('autotest')) {
-                property 'onepiece.autotest', 'true'
+                property 'onepiece.autotest', (project.property('autotest') ?: 'true').toString()
                 args '--width', '1280', '--height', '720'
             }
         }

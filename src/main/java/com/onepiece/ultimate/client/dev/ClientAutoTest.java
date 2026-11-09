@@ -46,7 +46,9 @@ import java.util.function.Consumer;
  */
 @Mod.EventBusSubscriber(modid = OnePieceMod.MOD_ID, value = Dist.CLIENT)
 public final class ClientAutoTest {
-    private static final boolean ENABLED = Boolean.getBoolean("onepiece.autotest");
+    /** "true"/"" = full visual run, "fp" = first-person calibration. */
+    private static final String MODE = System.getProperty("onepiece.autotest", "");
+    private static final boolean ENABLED = System.getProperty("onepiece.autotest") != null;
     private static final String WORLD = "onepiece_autotest";
 
     private record Step(int tick, Runnable action) {}
@@ -156,6 +158,48 @@ public final class ClientAutoTest {
     }
 
     static {
+        if ("fp".equals(MODE)) firstPersonCalibration();
+        else fullRun();
+    }
+
+    /** Plays one-parameter first-person poses and photographs them, to map pose values to what the camera sees. */
+    private static void firstPersonCalibration() {
+        int t = 60;
+        at(t, () -> server(ClientAutoTest::stage));
+        at(t + 30, () -> camera(CameraType.FIRST_PERSON));
+        at(t + 40, () -> shot("fp_00_rest"));
+        float[][] cal = {
+                {6, 0, 0, 0, 0, 0}, {0, 6, 0, 0, 0, 0}, {0, 0, 6, 0, 0, 0},
+                {0, 0, 0, 40, 0, 0}, {0, 0, 0, 0, 40, 0}, {0, 0, 0, 0, 0, 40},
+                {0, 0, 0, -40, 0, 0}, {0, 0, 0, 0, -40, 0}, {0, 0, 0, 0, 0, -40}};
+        String[] names = {"px+6", "py+6", "pz+6", "rx+40", "ry+40", "rz+40", "rx-40", "ry-40", "rz-40"};
+        for (int i = 0; i < cal.length; i++) {
+            float[] v = cal[i];
+            String name = String.format("fp_%02d_%s", i + 1, names[i]);
+            int at = t + 50 + i * 20;
+            at(at, () -> playPose(v));
+            at(at + 12, () -> shot(name));
+        }
+        at(t + 50 + cal.length * 20 + 10, () -> Minecraft.getInstance().stop());
+    }
+
+    private static void playPose(float[] v) {
+        var mc = Minecraft.getInstance();
+        if (mc.player == null) return;
+        var rot = new com.onepiece.ultimate.client.animation.Keyframe[]{
+                new com.onepiece.ultimate.client.animation.Keyframe(0, v[3], v[4], v[5], com.onepiece.ultimate.client.animation.Easing.LINEAR)};
+        var pos = new com.onepiece.ultimate.client.animation.Keyframe[]{
+                new com.onepiece.ultimate.client.animation.Keyframe(0, v[0], v[1], v[2], com.onepiece.ultimate.client.animation.Easing.LINEAR)};
+        var track = new com.onepiece.ultimate.client.animation.BoneTrack(rot, pos, null, false);
+        var tracks = new java.util.EnumMap<com.onepiece.ultimate.client.animation.Bone, com.onepiece.ultimate.client.animation.BoneTrack>(
+                com.onepiece.ultimate.client.animation.Bone.class);
+        tracks.put(com.onepiece.ultimate.client.animation.Bone.FP_RIGHT, track);
+        tracks.put(com.onepiece.ultimate.client.animation.Bone.FP_LEFT, track);
+        var anim = new com.onepiece.ultimate.client.animation.PoseAnimation(OnePieceMod.id("dev_cal"), 1, false, true, 0.1f, 0.1f, 1000, 0.9f, tracks);
+        com.onepiece.ultimate.client.animation.PlayerAnimations.controller(mc.player.getId()).play(anim, 1f);
+    }
+
+    private static void fullRun() {
         int t = 60; // after joining, give chunks time to load
         at(t, () -> server(ClientAutoTest::stage));
         at(t + 40, () -> camera(CameraType.THIRD_PERSON_BACK));

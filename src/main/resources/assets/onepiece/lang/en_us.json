@@ -150,5 +150,22 @@
   "subtitles.onepiece.haki.emission": "Haki bursts inside",
   "subtitles.onepiece.haki.conqueror_charge": "Willpower gathers",
   "subtitles.onepiece.haki.conqueror_wave": "Conqueror's Haki",
-  "subtitles.onepiece.haki.lightning": "Black lightning"
+  "subtitles.onepiece.haki.lightning": "Black lightning",
+  "screen.onepiece.tab.status": "Status",
+  "screen.onepiece.tab.fruit": "Devil Fruit",
+  "screen.onepiece.tab.haki": "Haki",
+  "screen.onepiece.energy_bar": "Energy %s / %s",
+  "screen.onepiece.haki_bar": "Haki %s / %s",
+  "screen.onepiece.shift_hint": "Shift-click: +5",
+  "screen.onepiece.derived": "Resulting stats",
+  "screen.onepiece.stat.health": "Max health: %s",
+  "screen.onepiece.stat.damage": "Damage: %s",
+  "screen.onepiece.stat.reduction": "Toughness: %s",
+  "screen.onepiece.stat.speed": "Speed: %s",
+  "screen.onepiece.stat.energy": "Max energy: %s",
+  "screen.onepiece.stat.haki": "Max haki: %s",
+  "screen.onepiece.no_fruit_hint": "Devil Fruits can be found in the world. Eating one grants unique powers – and takes away the sea.",
+  "screen.onepiece.haki_desc.armament": "Hardens the body into black armour. Trains by landing coated hits.",
+  "screen.onepiece.haki_desc.observation": "Senses presences and intentions, reads attacks before they land. Trains by dodging and sensing in combat.",
+  "screen.onepiece.haki_desc.conqueror": "The will of a king: overwhelms the weak. Only one in a few is born with it. Trains by overwhelming others."
 }

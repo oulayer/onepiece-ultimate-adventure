@@ -150,5 +150,22 @@
   "subtitles.onepiece.haki.emission": "Haki explode por dentro",
   "subtitles.onepiece.haki.conqueror_charge": "Vontade se acumula",
   "subtitles.onepiece.haki.conqueror_wave": "Haki do Rei",
-  "subtitles.onepiece.haki.lightning": "Raios negros"
+  "subtitles.onepiece.haki.lightning": "Raios negros",
+  "screen.onepiece.tab.status": "Status",
+  "screen.onepiece.tab.fruit": "Akuma no Mi",
+  "screen.onepiece.tab.haki": "Haki",
+  "screen.onepiece.energy_bar": "Energia %s / %s",
+  "screen.onepiece.haki_bar": "Haki %s / %s",
+  "screen.onepiece.shift_hint": "Shift-clique: +5",
+  "screen.onepiece.derived": "Atributos resultantes",
+  "screen.onepiece.stat.health": "Vida máxima: %s",
+  "screen.onepiece.stat.damage": "Dano: %s",
+  "screen.onepiece.stat.reduction": "Robustez: %s",
+  "screen.onepiece.stat.speed": "Velocidade: %s",
+  "screen.onepiece.stat.energy": "Energia máxima: %s",
+  "screen.onepiece.stat.haki": "Haki máximo: %s",
+  "screen.onepiece.no_fruit_hint": "Akuma no Mi podem ser encontradas pelo mundo. Comer uma concede poderes únicos – e tira o mar de você.",
+  "screen.onepiece.haki_desc.armament": "Endurece o corpo numa armadura negra. Treina acertando golpes revestidos.",
+  "screen.onepiece.haki_desc.observation": "Sente presenças e intenções e lê ataques antes de acontecerem. Treina esquivando e sentindo em combate.",
+  "screen.onepiece.haki_desc.conqueror": "A vontade de um rei: subjuga os fracos. Poucos nascem com ela. Treina subjugando outros."
 }

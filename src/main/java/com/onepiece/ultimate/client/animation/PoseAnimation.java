@@ -36,7 +36,7 @@ public record PoseAnimation(ResourceLocation id, float length, boolean loop, boo
         for (Map.Entry<Bone, BoneTrack> e : tracks.entrySet()) {
             int o = e.getKey().ordinal() * Pose.STRIDE;
             BoneTrack track = e.getValue();
-            boolean root = e.getKey() == Bone.ROOT;
+            boolean root = e.getKey().isSpecial();
             if (Keyframe.sample(track.rotation(), t, tmp)) {
                 float k = root ? 1f : DEG; // root rotation is kept in degrees for PoseStack
                 for (int i = 0; i < 3; i++) {

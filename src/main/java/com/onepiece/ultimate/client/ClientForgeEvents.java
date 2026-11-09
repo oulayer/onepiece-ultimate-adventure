@@ -32,6 +32,7 @@ public final class ClientForgeEvents {
             OPCapabilities.get(mc.player).ifPresent(d -> d.cooldowns().tick());
             PlayerAnimations.tick();
             KenVision.tick();
+            com.onepiece.ultimate.client.render.ArmamentVisuals.tick();
             infusionSparks(mc);
             CameraEffects.tick();
             ClientState.tick();
@@ -70,6 +71,7 @@ public final class ClientForgeEvents {
     public static void loggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
         PlayerAnimations.clear();
         KenVision.clear();
+        com.onepiece.ultimate.client.render.ArmamentVisuals.clear();
         CameraEffects.reset();
         ClientState.reset();
         InputHandler.reset();

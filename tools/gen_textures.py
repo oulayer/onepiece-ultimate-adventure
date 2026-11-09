@@ -236,5 +236,48 @@ for y in range(S):
         a = math.exp(-((r - 0.85) / 0.07) ** 2) + 0.35 * math.exp(-((r - 0.72) / 0.12) ** 2)
         px[x, y] = (255, 255, 255, int(255 * min(1, a)))
 save(img.resize((64, 64), Image.LANCZOS), f"{P}/ring.png")
-save(Image.new("RGBA", (4, 4), (255, 255, 255, 255)), f"{P}/white.png")  # solid sprite for ribbons (black lightning)
+save(Image.new("RGBA", (4, 4), (255, 255, 255, 255)), f"{P}/white.png")
+
+# ------------------------------------------------------------------ Armament Haki: flame aura + gloss map
+E = f"{A}/entity"
+# Tileable purple/black flame noise, scrolled by RenderType.energySwirl.
+import numpy as _np
+S = 64
+yy, xx = _np.mgrid[0:S, 0:S] / S
+rnd = random.Random(11)
+field = _np.zeros((S, S))
+for octave in range(1, 5):  # tileable sum of waves at several scales
+    for _ in range(3):
+        fx, fy = rnd.randint(-octave * 2, octave * 2), rnd.randint(1, octave * 3)
+        ph = rnd.uniform(0, 6.28)
+        field += _np.sin(2 * _np.pi * (fx * xx + fy * yy) + ph + _np.sin(2 * _np.pi * 2 * yy) * 1.2) / octave
+field = (field - field.min()) / (field.max() - field.min())
+flame = _np.clip((field - 0.38) / 0.5, 0, 1) ** 1.2
+rgba = _np.zeros((S, S, 4), dtype=_np.uint8)
+rgba[..., 0] = _np.clip(90 + 160 * flame, 0, 255)
+rgba[..., 1] = _np.clip(20 + 90 * flame ** 2, 0, 255)
+rgba[..., 2] = 255
+rgba[..., 3] = _np.clip(255 * flame * 1.4, 0, 255)
+save(Image.fromarray(rgba, "RGBA"), f"{E}/haki_flame.png")
+
+# Gloss highlights laid out on the 64x64 player-skin UV map (base + overlay layers).
+img = Image.new("RGBA", (64, 64), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+def limb(u, v, w, d_, h):
+    """Box UV at (u,v) with width w, depth d_, height h: faces right|front|left|back along the side strip."""
+    sides = [(u, v + d_, d_), (u + d_, v + d_, w), (u + d_ + w, v + d_, d_), (u + 2 * d_ + w, v + d_, w)]
+    for i, (fu, fv, fw) in enumerate(sides):
+        sx = fu + max(0, fw // 3 - (1 if i % 2 else 0))
+        for yy in range(fv, fv + h):  # vertical streak, fades toward the shoulder
+            a = int(90 + 120 * (yy - fv) / max(1, h - 1))
+            d.point((sx, yy), fill=(255, 255, 255, a))
+        d.point((sx + 1, fv + h - 3), fill=(255, 255, 255, 255))  # knuckle shine
+        d.point((sx + 1, fv + h - 2), fill=(255, 255, 255, 230))
+    d.rectangle([u + d_ + w, v, u + d_ + w + 1, v + 1], fill=(255, 255, 255, 200))  # tip of the fist (bottom face)
+for (u, v, w, dd, h) in [(40, 16, 4, 4, 12), (40, 32, 4, 4, 12), (32, 48, 4, 4, 12), (48, 48, 4, 4, 12),   # arms + sleeves
+                         (0, 16, 4, 4, 12), (0, 32, 4, 4, 12), (16, 48, 4, 4, 12), (0, 48, 4, 4, 12),     # legs + pants
+                         (16, 16, 8, 4, 12), (16, 32, 8, 4, 12)]:                                         # body + jacket
+    limb(u, v, w, dd, h)
+d.line([(10, 9), (10, 12)], fill=(255, 255, 255, 170))  # head
+d.line([(42, 9), (42, 12)], fill=(255, 255, 255, 170))  # hat
+save(img, f"{E}/armament_gloss.png")  # solid sprite for ribbons (black lightning)
 print("textures done")

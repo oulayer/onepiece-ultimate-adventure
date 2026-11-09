@@ -46,6 +46,80 @@ def thump(freq, d, click=0.4, peak=0.95):
     c = lowpass(noise(d), 3500) * np.exp(-tt * 140) * click
     return norm(np.tanh(2.2 * (body + c)), peak)
 
+# ------------------------------------------------------------------ cartoon rubber synthesis
+from scipy import signal
+
+def bandpass(x, lo, hi, order=2):
+    b, a = signal.butter(order, [lo / (SR / 2), hi / (SR / 2)], btype="band")
+    return signal.lfilter(b, a, x)
+
+def resonate(x, freq, q):
+    b, a = signal.iirpeak(freq / (SR / 2), q)
+    return signal.lfilter(b, a, x)
+
+def twang(f0, dur, glide=0.6, vib=14.0, vib_depth=0.08, bright=6, decay=5.0):
+    """Plucked rubber band: harmonic tone that glides up with a wobbling vibrato, through a rubbery body resonance."""
+    tt = t(dur)
+    f = f0 * (1 + glide * (1 - np.exp(-tt * 9))) * (1 + vib_depth * np.sin(2 * np.pi * vib * tt) * np.exp(-tt * 2.5))
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    tone = sum(np.sin(k * ph) / k ** 1.3 for k in range(1, bright + 1))
+    tone *= np.exp(-tt * decay) * np.clip(tt / 0.004, 0, 1)
+    body = resonate(tone, 650, 3) + 0.6 * resonate(tone, 1500, 4)
+    return np.tanh(1.6 * (0.6 * tone + body))
+
+def squeak(dur, f_lo, f_hi, rate=35):
+    """Rubber friction creak: noise through a narrow band-pass whose centre jitters, with stick-slip pulses."""
+    tt = t(dur)
+    n = noise(dur)
+    centre = f_lo + (f_hi - f_lo) * (tt / dur)
+    out = np.zeros_like(n)
+    seg = int(SR * 0.01)
+    for i in range(0, len(n), seg):
+        c = centre[i] * (1 + 0.15 * rng.standard_normal())
+        out[i:i + seg] = resonate(n[max(0, i - seg):i + seg], max(200, c), 25)[-len(n[i:i + seg]):]
+    stick = 0.5 + 0.5 * np.sign(np.sin(2 * np.pi * rate * tt + 3 * np.sin(2 * np.pi * 3 * tt)))
+    return out * stick * np.sin(np.pi * tt / dur) ** 0.7
+
+def boing(base, dur, rate=11.0, depth=0.75, decay=2.6):
+    """Spring 'boinnng': pitch oscillating around the base, decaying."""
+    tt = t(dur)
+    f = base * (1 + depth * np.sin(2 * np.pi * rate * tt) * np.exp(-tt * decay))
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    tone = np.sin(ph) + 0.35 * np.sin(2 * ph) + 0.12 * np.sin(3 * ph)
+    return tone * np.exp(-tt * 3.2) * np.clip(tt / 0.003, 0, 1)
+
+def slap(dur=0.05, lo=900, hi=4000):
+    tt = t(dur)
+    return bandpass(noise(dur), lo, hi) * np.exp(-tt * 90)
+
+def place(total, *parts):
+    """Mix (offset_seconds, array, gain) parts into one buffer."""
+    out = np.zeros(int(SR * total))
+    for off, arr, g in parts:
+        i = int(SR * off)
+        n = min(len(arr), len(out) - i)
+        out[i:i + n] += g * arr[:n]
+    return out
+
+def rubber_stretch(v):
+    f0 = [150, 175, 135][v]
+    return norm(place(0.6, (0.0, squeak(0.18, 700 + 150 * v, 1400 + 200 * v), 0.35),
+                      (0.06, twang(f0, 0.5, glide=0.9 + 0.2 * v, vib=13 + 2 * v), 1.0)), 0.8)
+
+def rubber_snap(v):
+    tt = t(0.22)
+    f = (900 - 120 * v) * np.exp(-tt * 14) + 110
+    zip_ = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 9)
+    return norm(place(0.3, (0.0, zip_, 0.8), (0.12, slap(0.06, 600, 3000), 1.0), (0.12, thump(160, 0.12, 0.2), 0.5)), 0.85)
+
+def rubber_bounce(v):
+    return norm(place(0.8, (0.0, slap(0.03, 300, 1500), 0.5), (0.0, boing([210, 250][v], 0.75, rate=[10, 12.5][v]), 1.0)), 0.8)
+
+def rubber_inflate(v):
+    air = lowpass(noise(0.7), 900) * np.sin(np.pi * t(0.7) / 0.7)
+    return norm(place(0.75, (0.0, air, 0.5), (0.05, squeak(0.6, 400 + 100 * v, 900 + 150 * v, rate=20 + 6 * v), 0.8),
+                      (0.0, sine_sweep(90, 170, 0.7) * np.sin(np.pi * t(0.7) / 0.7), 0.25)), 0.75)
+
 SOUNDS = {
     "combat/swing_light": lambda: whoosh(0.16, 600, 3500, 0.6),
     "combat/swing_heavy": lambda: whoosh(0.32, 250, 1800, 0.8),
@@ -59,13 +133,12 @@ SOUNDS = {
                                 + 0.5 * lowpass(noise(0.9), 500) * np.exp(-t(0.9) * 3.5)),
     "combat/charge": lambda: norm(sine_sweep(180, 620, 0.55, 1.4) * (0.6 + 0.4 * np.sin(2 * np.pi * 18 * t(0.55)))
                                   * np.sin(np.pi * t(0.55) / 0.55) ** 0.5, 0.45),
-    "gomu/stretch": lambda: norm((sine_sweep(160, 520, 0.38, 0.7) * (1 + 0.5 * np.sin(2 * np.pi * 26 * t(0.38))))
-                                 * np.sin(np.pi * t(0.38) / 0.38), 0.6),
-    "gomu/snap": lambda: norm(sine_sweep(700, 120, 0.15, 0.4) * np.exp(-t(0.15) * 18) + 0.3 * highpass(noise(0.15), 2000) * np.exp(-t(0.15) * 80), 0.7),
-    "gomu/inflate": lambda: norm(lowpass(noise(0.6), 700 + 1200 * t(0.6)) * np.sin(np.pi * t(0.6) / 0.6) + 0.25 * sine_sweep(90, 160, 0.6), 0.6),
+    # cartoon rubber (several variations each; the game picks one at random)
+    "gomu/stretch": lambda: [rubber_stretch(v) for v in range(3)],
+    "gomu/snap": lambda: [rubber_snap(v) for v in range(3)],
+    "gomu/inflate": lambda: [rubber_inflate(v) for v in range(2)],
     "gomu/gear_second": lambda: norm(highpass(noise(1.1), 2500) * (np.abs(np.sin(np.pi * 3 * t(1.1) / 1.1)) ** 2) * np.exp(-t(1.1) * 1.2), 0.6),
-    "gomu/bounce": lambda: norm(np.sin(2 * np.pi * np.cumsum(260 + 160 * np.sin(2 * np.pi * 14 * t(0.45)) * np.exp(-t(0.45) * 5)) / SR)
-                                * np.exp(-t(0.45) * 6), 0.7),
+    "gomu/bounce": lambda: [rubber_bounce(v) for v in range(2)],
     "destruction/rumble": lambda: norm(lowpass(noise(1.6), 160) * np.sin(np.pi * t(1.6) / 1.6) ** 0.6, 0.9),
     "fruit/eat": lambda: norm(sum(np.sin(2 * np.pi * f * t(1.0)) * np.exp(-((t(1.0) - d) ** 2) / 0.02) for f, d in
                                   [(392, 0.1), (523, 0.25), (659, 0.4), (784, 0.55), (1046, 0.7)]), 0.5),
@@ -97,11 +170,20 @@ def write_ogg(path, data):
 def main():
     events = {}
     for name, fn in SOUNDS.items():
-        path = os.path.join(OUT, name + ".ogg")
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        write_ogg(path, fn())
+        result = fn()
+        variants = result if isinstance(result, list) else [result]
+        names = []
+        for i, data in enumerate(variants):
+            file = name if len(variants) == 1 else f"{name}_{i + 1}"
+            path = os.path.join(OUT, file + ".ogg")
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            write_ogg(path, data)
+            names.append({"name": "onepiece:" + file})
+        old = os.path.join(OUT, name + ".ogg")
+        if len(variants) > 1 and os.path.exists(old):
+            os.remove(old)
         key = name.replace("/", ".")
-        events[key] = {"subtitle": "subtitles.onepiece." + key, "sounds": [{"name": "onepiece:" + name}]}
+        events[key] = {"subtitle": "subtitles.onepiece." + key, "sounds": names}
     with open("src/main/resources/assets/onepiece/sounds.json", "w") as f:
         json.dump(events, f, indent=2)
     print("wrote", len(events), "sounds")

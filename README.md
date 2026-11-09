@@ -109,5 +109,18 @@ Comando de administração/teste: `/onepiece fruit set onepiece:gomu_gomu`, `mas
 2. Uma classe `DevilFruit` com `createAbilities()` e as passivas (`modifyIncomingDamage`, `isImmuneTo`, `onFall`, `passiveTick`).
 3. Registrar em `DevilFruits.bootstrap()`, criar o item em `ModItems`, animações JSON, ícones e traduções.
 
+## Usando seus próprios sons
+Cada efeito tem um evento próprio, e as variações são sorteadas a cada uso. Para trocar por sons seus, crie um resource pack com arquivos `.ogg` (mono) nestes caminhos:
+
+```
+meu_pack/pack.mcmeta
+meu_pack/assets/onepiece/sounds/gomu/stretch_1.ogg   (… stretch_2, stretch_3)
+meu_pack/assets/onepiece/sounds/gomu/snap_1.ogg      (… snap_2, snap_3)
+meu_pack/assets/onepiece/sounds/gomu/bounce_1.ogg    (… bounce_2)
+meu_pack/assets/onepiece/sounds/gomu/inflate_1.ogg   (… inflate_2)
+```
+
+Os demais sons seguem a mesma ideia (`combat/`, `haki/`, `destruction/`, `fruit/`). Veja a lista completa em `src/main/resources/assets/onepiece/sounds.json`. Coloque o pack em `resourcepacks/` e ative-o em Opções → Pacotes de Recursos.
+
 ## Ferramentas
-`tools/gen_sounds.py` (sons sintetizados proceduralmente), `tools/gen_textures.py` (ícones/partículas), `tools/gen_test_structure.py` (arena dos testes). Os sons e texturas atuais são *placeholders* originais; cada evento tem arquivo próprio para ser substituído por um resource pack.
+`tools/gen_sounds.py` (sons sintetizados proceduralmente; a borracha usa ressonadores e twang/boing/rangido com variações), `tools/gen_animations.py` (as animações JSON), `tools/gen_textures.py` (ícones/partículas), `tools/gen_test_structure.py` (arena dos testes). Os sons e texturas atuais são *placeholders* originais; cada evento tem arquivo próprio para ser substituído por um resource pack.

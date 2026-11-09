@@ -116,6 +116,17 @@ public final class AnimationController {
 
     /** Evaluates only the ROOT bone (whole-body transform, applied before the model renders). */
     public void applyRoot(Pose pose, float partial) {
+        applySpecial(pose, partial, Bone.ROOT);
+    }
+
+    /** True if the running state or action animates the first-person arms. */
+    public boolean hasFirstPerson() {
+        return (action != null && (action.anim.has(Bone.FP_RIGHT) || action.anim.has(Bone.FP_LEFT)))
+                || (state != null && (state.anim.has(Bone.FP_RIGHT) || state.anim.has(Bone.FP_LEFT)));
+    }
+
+    /** Evaluates only the given special bones, cross-fading them from the last snapshot. */
+    public void applySpecial(Pose pose, float partial, Bone... bones) {
         pose.reset();
         if (state != null) state.anim.apply(pose, state.time(partial), 1f, tmp);
         if (action != null) {
@@ -129,8 +140,15 @@ public final class AnimationController {
         float sw = 1f - (c - snapshotStart) / snapshotDuration;
         if (sw > 0 && hasLast) {
             sw = sw * sw * (3 - 2 * sw);
-            int o = Bone.ROOT.ordinal() * Pose.STRIDE;
-            for (int i = o; i < o + Pose.STRIDE; i++) pose.v[i] += (snapshot.v[i] - pose.v[i]) * sw;
+            for (Bone bone : bones) {
+                int o = bone.ordinal() * Pose.STRIDE;
+                for (int i = o; i < o + Pose.STRIDE; i++) pose.v[i] += (snapshot.v[i] - pose.v[i]) * sw;
+            }
+        }
+        // Keep the snapshot source current for these bones (the first-person path never runs apply()).
+        for (Bone bone : bones) {
+            int o = bone.ordinal() * Pose.STRIDE;
+            System.arraycopy(pose.v, o, lastPose.v, o, Pose.STRIDE);
         }
     }
 
