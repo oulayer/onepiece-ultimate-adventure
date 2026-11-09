@@ -46,6 +46,46 @@
      0
     ]
    ]
+  },
+  "fp_right": {
+   "rotation": [
+    [
+     0,
+     15,
+     -35,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     -7,
+     6,
+     2,
+     "in_out_quad"
+    ]
+   ]
+  },
+  "fp_left": {
+   "rotation": [
+    [
+     0,
+     15,
+     -35,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     -7,
+     6,
+     2,
+     "in_out_quad"
+    ]
+   ]
   }
  }
 }

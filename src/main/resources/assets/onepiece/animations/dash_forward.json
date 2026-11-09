@@ -81,6 +81,102 @@
      0
     ]
    ]
+  },
+  "fp_right": {
+   "rotation": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     2,
+     0,
+     10,
+     0,
+     "out_cubic"
+    ],
+    [
+     9,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     2,
+     1,
+     -2,
+     -3,
+     "out_cubic"
+    ],
+    [
+     9,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ]
+  },
+  "fp_left": {
+   "rotation": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     2,
+     0,
+     10,
+     0,
+     "out_cubic"
+    ],
+    [
+     9,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     2,
+     1,
+     -2,
+     -3,
+     "out_cubic"
+    ],
+    [
+     9,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ]
   }
  }
 }

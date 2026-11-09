@@ -162,25 +162,62 @@ public final class ClientAutoTest {
         else fullRun();
     }
 
-    /** Plays one-parameter first-person poses and photographs them, to map pose values to what the camera sees. */
+    /** First-person review: real moves triggered through the network packets, photographed at key frames. */
     private static void firstPersonCalibration() {
         int t = 60;
         at(t, () -> server(ClientAutoTest::stage));
+        at(t + 5, () -> server(ClientAutoTest::stageHaki));
+        at(t + 10, () -> server(sp -> OPCapabilities.get(sp).ifPresent(d -> d.setCombatMode(true))));
         at(t + 30, () -> camera(CameraType.FIRST_PERSON));
-        at(t + 40, () -> shot("fp_00_rest"));
-        float[][] cal = {
-                {6, 0, 0, 0, 0, 0}, {0, 6, 0, 0, 0, 0}, {0, 0, 6, 0, 0, 0},
-                {0, 0, 0, 40, 0, 0}, {0, 0, 0, 0, 40, 0}, {0, 0, 0, 0, 0, 40},
-                {0, 0, 0, -40, 0, 0}, {0, 0, 0, 0, -40, 0}, {0, 0, 0, 0, 0, -40}};
-        String[] names = {"px+6", "py+6", "pz+6", "rx+40", "ry+40", "rz+40", "rx-40", "ry-40", "rz-40"};
-        for (int i = 0; i < cal.length; i++) {
-            float[] v = cal[i];
-            String name = String.format("fp_%02d_%s", i + 1, names[i]);
-            int at = t + 50 + i * 20;
-            at(at, () -> playPose(v));
-            at(at + 12, () -> shot(name));
+        at(t + 45, () -> shot("fp_01_guard"));
+        int[] punches = {50, 60, 70, 82};
+        String[] pn = {"fp_02_jab_right", "fp_03_jab_left", "fp_04_hook", "fp_05_kick"};
+        for (int i = 0; i < punches.length; i++) {
+            final String n = pn[i];
+            at(t + punches[i], () -> combat(CombatAction.LIGHT));
+            at(t + punches[i] + 3, () -> shot(n));
         }
-        at(t + 50 + cal.length * 20 + 10, () -> Minecraft.getInstance().stop());
+        at(t + 110, () -> combat(CombatAction.BLOCK_PRESS));
+        at(t + 118, () -> shot("fp_06_block"));
+        at(t + 120, () -> combat(CombatAction.BLOCK_RELEASE));
+        at(t + 130, ClientAutoTest::refill);
+        at(t + 132, () -> combat(CombatAction.HEAVY_PRESS));
+        at(t + 155, () -> shot("fp_07_heavy_charge"));
+        at(t + 157, () -> combat(CombatAction.HEAVY_RELEASE));
+        at(t + 160, () -> shot("fp_08_heavy_release"));
+        at(t + 180, ClientAutoTest::refill);
+        at(t + 182, () -> hakiPress(0));
+        at(t + 183, () -> hakiRelease(0));
+        at(t + 187, () -> shot("fp_09_armament_flames"));
+        at(t + 193, () -> shot("fp_10_armament_hardening"));
+        at(t + 215, () -> shot("fp_11_armament_guard"));
+        at(t + 220, () -> combat(CombatAction.LIGHT));
+        at(t + 223, () -> shot("fp_12_armament_jab"));
+        at(t + 240, ClientAutoTest::refill);
+        at(t + 242, () -> press(4));
+        at(t + 262, () -> shot("fp_13_bazooka_charge"));
+        at(t + 266, () -> release(4));
+        at(t + 269, () -> shot("fp_14_bazooka_release"));
+        at(t + 290, ClientAutoTest::refill);
+        at(t + 292, () -> press(6));
+        at(t + 322, () -> shot("fp_15_gigant_charge"));
+        at(t + 326, () -> release(6));
+        at(t + 345, ClientAutoTest::refill);
+        at(t + 347, () -> hakiPress(4));
+        at(t + 370, () -> shot("fp_16_conqueror_charge"));
+        at(t + 375, () -> hakiRelease(4));
+        at(t + 378, () -> shot("fp_17_conqueror_release"));
+        at(t + 400, () -> Minecraft.getInstance().setScreen(new CharacterScreen()));
+        at(t + 410, () -> shot("menu_1_status"));
+        at(t + 412, () -> {
+            if (Minecraft.getInstance().screen instanceof CharacterScreen cs) cs.selectTab(1);
+        });
+        at(t + 420, () -> shot("menu_2_fruit"));
+        at(t + 422, () -> {
+            if (Minecraft.getInstance().screen instanceof CharacterScreen cs) cs.selectTab(2);
+        });
+        at(t + 430, () -> shot("menu_3_haki"));
+        at(t + 440, () -> Minecraft.getInstance().stop());
     }
 
     private static void playPose(float[] v) {

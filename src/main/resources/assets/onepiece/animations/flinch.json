@@ -99,6 +99,102 @@
     ]
    ],
    "additive": true
+  },
+  "fp_right": {
+   "rotation": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     1,
+     0,
+     8,
+     0,
+     "out_expo"
+    ],
+    [
+     8,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     1,
+     1,
+     -2,
+     -2,
+     "out_expo"
+    ],
+    [
+     8,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ]
+  },
+  "fp_left": {
+   "rotation": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     1,
+     0,
+     8,
+     0,
+     "out_expo"
+    ],
+    [
+     8,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     1,
+     1,
+     -2,
+     -2,
+     "out_expo"
+    ],
+    [
+     8,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ]
   }
  }
 }

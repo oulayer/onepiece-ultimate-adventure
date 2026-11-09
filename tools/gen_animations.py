@@ -330,10 +330,83 @@ A("haki_awaken", 40, {
     "head": rot((0, 0, 0, 0), (6, 35, 0, 0), (18, 35, 0, 0), (24, -30, 0, 0), (40, 0, 0, 0)),
 }, bi=2, pr=45)
 
+# ---------------- first-person arms (camera space, left arm mirrored automatically)
+# keyframe: (t, px, py, pz, rx, ry, rz[, ease]) – px outward, py up, pz forward (pixels); rotations in degrees
+def fpk(frames):
+    rotation, position = [], []
+    for f in frames:
+        ease = f[7] if len(f) > 7 else "in_out_quad"
+        position.append([f[0], f[1], f[2], f[3], ease])
+        rotation.append([f[0], f[4], f[5], f[6], ease])
+    return {"rotation": rotation, "position": position}
+
+GUARD = (-2, 3, -1, 10, -15, 0)
+def g(t, ease="in_out_quad"): return (t, *GUARD, ease)
+JAB = (-5, 3.5, 9, 5, -25, 0)
+CROSS = (-7, 6, 2, 15, -35, 0)
+
+FP = {
+    "combat_stance": ([g(0), (20, -2, 3.4, -1, 11, -15, 0), g(40)], None),
+    "punch_1": ([g(0), (2, *JAB, "out_back"), (5, *JAB), g(9)], [g(0), (2, -2, 2.6, -2.5, 10, -15, 0), g(9)]),
+    "punch_2": ([g(0), (2, -2, 2.6, -2.5, 10, -15, 0), g(9)], [g(0), (2, *JAB, "out_back"), (5, *JAB), g(9)]),
+    "punch_3": ([g(0), (1, 2, 2, 0, 0, 20, 0), (3, -7, 3.5, 6, 0, -45, 0, "out_cubic"), (6, -7, 3.5, 6, 0, -45, 0), g(11)], [g(0), g(11)]),
+    "kick_finisher": ([g(0), (4, 3, 0, -2, -10, 25, 0, "out_cubic"), (11, 3, 0, -2, -10, 25, 0), g(16)], None),
+    "aerial_punch": ([g(0), (2, -3, 0, 8, 25, -15, 0, "out_back"), g(8)], [g(0), g(8)]),
+    "heavy_charge": ([(0, 3, 1, -5, 0, 30, 0), (10, 3.2, 1.2, -5.3, 0, 31, 0), (20, 3, 1, -5, 0, 30, 0)], [g(0), g(20)]),
+    "heavy_release": ([(0, 3, 1, -5, 0, 30, 0), (2, -5, 3, 11, 5, -28, 0, "out_expo"), (8, -5, 3, 11, 5, -28, 0), g(16)],
+                      [g(0), (2, 1, 0, -3, 0, 10, 0), g(16)]),
+    "block": ([(0, *CROSS)], None),
+    "block_hit": ([(0, *CROSS), (1, -7, 6, -0.5, 15, -35, 0, "out_expo"), (6, *CROSS)], None),
+    "parry": ([(0, *CROSS), (2, 4, 4, 3, 0, 30, 0, "out_back"), (8, 4, 4, 3, 0, 30, 0), g(12)], None),
+    "guard_break": ([(0, *CROSS), (3, 4, 6, -2, 0, 35, 0, "out_expo"), (16, 4, 6, -2, 0, 35, 0), g(22)], None),
+    "dash_forward": ([(0, 0, 0, 0, 0, 0, 0), (2, 1, -2, -3, 0, 10, 0, "out_cubic"), (9, 0, 0, 0, 0, 0, 0)], None),
+    "dash_back": ([(0, 0, 0, 0, 0, 0, 0), (2, -1, 1, 2, 0, -5, 0, "out_cubic"), (9, 0, 0, 0, 0, 0, 0)], None),
+    "aerial_slam": ([(0, 0, 0, 0, 0, 0, 0), (4, -3, 7, 1, -20, -10, 0, "out_cubic"), (30, -3, 7, 1, -20, -10, 0)], None),
+    "slam_land": ([(0, -3, 7, 1, -20, -10, 0), (2, -3, -1, 6, 30, -10, 0, "out_expo"), (14, 0, 0, 0, 0, 0, 0)], None),
+    "flinch": ([(0, 0, 0, 0, 0, 0, 0), (1, 1, -2, -2, 0, 8, 0, "out_expo"), (8, 0, 0, 0, 0, 0, 0)], None),
+    "gomu_pistol": ([g(0), (3, 3, 1, -6, 0, 25, 0, "out_cubic"), (4, *JAB, "out_expo"), (12, *JAB), g(14)], [g(0), g(14)]),
+    "gomu_jet_pistol": ([g(0), (1, *JAB, "out_expo"), (8, *JAB), g(10)], [g(0), g(10)]),
+    "gomu_gatling": ([(0, *JAB), (1, -3, 3, 4, 5, -18, 0), (2, -2, 2.5, 1, 8, -15, 0), (3, *JAB), (4, *JAB)],
+                     [(0, -2, 2.5, 1, 8, -15, 0), (1, *JAB), (2, *JAB), (3, -2, 2.5, 1, 8, -15, 0), (4, -2, 2.5, 1, 8, -15, 0)]),
+    "gomu_jet_gatling": ([(0, *JAB), (1, -2, 2.5, 1, 8, -15, 0), (2, *JAB)], [(0, -2, 2.5, 1, 8, -15, 0), (1, *JAB), (2, -2, 2.5, 1, 8, -15, 0)]),
+    "gomu_bazooka_charge": ([(0, *GUARD), (8, 2, -1, -6, 0, 20, 0, "out_back"), (30, 2, -1.3, -6.3, 0, 21, 0)], None),
+    "gomu_bazooka_release": ([(0, 2, -1, -6, 0, 20, 0), (2, -4, 3, 10, 0, -20, 0, "out_expo"), (10, -4, 3, 10, 0, -20, 0), (16, 0, 0, 0, 0, 0, 0)], None),
+    "gomu_rocket": ([(0, 0, 0, 0, 0, 0, 0), (2, -2, 6, 6, -10, -10, 0, "out_back"), (14, -2, 6, 6, -10, -10, 0), (16, 0, 0, 0, 0, 0, 0)], None),
+    "gear_second_activate": ([(0, 0, 0, 0, 0, 0, 0), (3, -1, -3, 1, 10, -5, 0), (15, -1, -3, 1, 10, -5, 0), (18, 3, 2, 0, 0, 25, 0, "out_back"), (20, 0, 0, 0, 0, 0, 0)], None),
+    "armament_activate": ([(0, 0, 0, 0, 0, 0, 0), (4, *CROSS, "out_back"), (15, -7.2, 6.2, 2, 15, -36, 0), (19, 2, 2, 0, 0, 20, 0, "out_back"), (24, 0, 0, 0, 0, 0, 0)], None),
+    "observation_activate": ([(0, 0, 0, 0, 0, 0, 0), (5, 1, -1, 0, 0, 5, 0), (14, 1, -1, 0, 0, 5, 0), (20, 0, 0, 0, 0, 0, 0)], None),
+    "ken_dodge_left": ([(0, 0, 0, 0, 0, 0, 0), (2, 2, -1, -1, 0, 10, 0, "out_expo"), (10, 0, 0, 0, 0, 0, 0)], None),
+    "ken_dodge_right": ([(0, 0, 0, 0, 0, 0, 0), (2, 2, -1, -1, 0, 10, 0, "out_expo"), (10, 0, 0, 0, 0, 0, 0)], None),
+    "emission_charge": ([g(0), (6, 3, 1, -5, 0, 30, 0, "out_back"), (20, 3.2, 1.1, -5.2, 0, 31, 0)], [g(0), g(20)]),
+    "emission_release": ([(0, 3, 1, -5, 0, 30, 0), (2, -5, 3, 11, 5, -28, 0, "out_expo"), (11, -5, 3, 11, 5, -28, 0), g(18)], [g(0), g(18)]),
+    "future_sight": ([(0, 0, 0, 0, 0, 0, 0), (4, -1, 2, 2, 5, -10, 0), (16, -1, 2, 2, 5, -10, 0), (20, 0, 0, 0, 0, 0, 0)], None),
+    "conqueror_charge": ([(0, 0, 0, 0, 0, 0, 0), (8, 5, -1, 0, 0, 30, 10), (30, 5.3, -1.2, 0, 0, 31, 11)], None),
+    "conqueror_release": ([(0, 5, -1, 0, 0, 30, 10), (2, 7, 3, 0, 0, 45, 15, "out_expo"), (16, 7, 3, 0, 0, 45, 15), (26, 0, 0, 0, 0, 0, 0)], None),
+    "infusion_activate": ([(0, 0, 0, 0, 0, 0, 0), (3, -3, 5, 4, 0, -15, 0, "out_back"), (8, -3, 5, 4, 0, -15, 0), (16, 0, 0, 0, 0, 0, 0)], [(0, 0, 0, 0, 0, 0, 0), (16, 0, 0, 0, 0, 0, 0)]),
+    "haki_awaken": ([(0, 0, 0, 0, 0, 0, 0), (6, 1, -2, 0, 0, 5, 0), (18, 1, -2, 0, 0, 5, 0), (24, 4, 6, 0, -20, 30, 0, "out_back"), (34, 4, 6, 0, -20, 30, 0), (40, 0, 0, 0, 0, 0, 0)], None),
+}
+FP_SCALE = {
+    "gomu_gigant_charge": ("fp_right", [[0, 1, 1, 1], [8, 1.3, 1.3, 1.3], [30, 2.3, 2.3, 2.3, "out_elastic"]]),
+    "gomu_gigant_release": ("fp_right", [[0, 2.3, 2.3, 2.3], [16, 2.0, 2.0, 2.0], [22, 1, 1, 1]]),
+}
+FP["gomu_gigant_bite"] = ([(0, 0, 0, 0, 0, 0, 0), (3, -6, 6, 0, 10, -30, 0), (10, -6, 6, 0, 10, -30, 0)], [g(0), g(10)])
+FP["gomu_gigant_charge"] = ([(0, -6, 6, 0, 10, -30, 0), (8, 0, 9, -2, -25, 0, 0, "out_back"), (30, 0, 9.5, -2.2, -26, 0, 0)], [g(0), g(30)])
+FP["gomu_gigant_release"] = ([(0, 0, 9.5, -2.2, -26, 0, 0), (2, *JAB, "out_expo"), (16, *JAB), (22, 0, 0, 0, 0, 0, 0)], [g(0), g(22)])
+
+for name, (right, leftk) in FP.items():
+    p = f"{OUT}/{name}.json"
+    d = json.load(open(p))
+    d["bones"]["fp_right"] = fpk(right)
+    d["bones"]["fp_left"] = fpk(leftk if leftk is not None else right)
+    if name in FP_SCALE:
+        bone, sc = FP_SCALE[name]
+        d["bones"][bone]["scale"] = sc
+    json.dump(d, open(p, "w"), indent=1)
+
 # strip helper keys
 for f in os.listdir(OUT):
     p = f"{OUT}/{f}"; d = json.load(open(p))
     d["bones"] = {k: v for k, v in d["bones"].items() if v is not None and k in
-                  ("head", "body", "right_arm", "left_arm", "right_leg", "left_leg", "root")}
+                  ("head", "body", "right_arm", "left_arm", "right_leg", "left_leg", "root", "fp_right", "fp_left")}
     json.dump(d, open(p, "w"), indent=1)
 print(count, "animations")

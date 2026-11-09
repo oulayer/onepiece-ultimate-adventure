@@ -384,6 +384,11 @@ public class CharacterScreen extends Screen {
         return super.keyPressed(key, scan, mods);
     }
 
+    /** 0 = status, 1 = devil fruit, 2 = haki (also used by the dev autotest). */
+    public void selectTab(int index) {
+        tab = Tab.values()[Math.max(0, Math.min(Tab.values().length - 1, index))];
+    }
+
     @Override
     public boolean isPauseScreen() {
         return false;

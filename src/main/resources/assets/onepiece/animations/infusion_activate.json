@@ -91,6 +91,102 @@
      0
     ]
    ]
+  },
+  "fp_right": {
+   "rotation": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     3,
+     0,
+     -15,
+     0,
+     "out_back"
+    ],
+    [
+     8,
+     0,
+     -15,
+     0,
+     "in_out_quad"
+    ],
+    [
+     16,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     3,
+     -3,
+     5,
+     4,
+     "out_back"
+    ],
+    [
+     8,
+     -3,
+     5,
+     4,
+     "in_out_quad"
+    ],
+    [
+     16,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ]
+  },
+  "fp_left": {
+   "rotation": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     16,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ],
+    [
+     16,
+     0,
+     0,
+     0,
+     "in_out_quad"
+    ]
+   ]
   }
  }
 }
