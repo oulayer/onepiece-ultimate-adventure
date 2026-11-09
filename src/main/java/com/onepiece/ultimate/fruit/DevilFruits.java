@@ -13,6 +13,7 @@ import java.util.Map;
 /** Registry of implemented Devil Fruits. Only fully implemented fruits are registered. */
 public final class DevilFruits {
     public static final ResourceLocation GOMU_GOMU_ID = OnePieceMod.id("gomu_gomu");
+    public static final ResourceLocation TORI_PHOENIX_ID = OnePieceMod.id("tori_tori_phoenix");
 
     private static final Map<ResourceLocation, DevilFruit> FRUITS = new LinkedHashMap<>();
     private static boolean bootstrapped;
@@ -21,6 +22,7 @@ public final class DevilFruits {
         if (bootstrapped) return;
         bootstrapped = true;
         register(new GomuGomuNoMi(GOMU_GOMU_ID));
+        register(new com.onepiece.ultimate.fruit.phoenix.PhoenixFruit(TORI_PHOENIX_ID));
     }
 
     private static void register(DevilFruit fruit) {

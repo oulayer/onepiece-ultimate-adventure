@@ -44,9 +44,13 @@ public final class GomuGomuNoMi extends DevilFruit {
                 GomuAbilities.GATLING,
                 GomuAbilities.ROCKET,
                 GomuAbilities.BAZOOKA,
-                GomuAbilities.GEAR_SECOND,
                 GomuAbilities.GIGANT_PISTOL
         );
+    }
+
+    @Override
+    protected List<Ability> createTransformations() {
+        return List.of(GomuAbilities.GEAR_SECOND, GomuAbilities.BOUNDMAN, GomuAbilities.SNAKEMAN, GomuAbilities.GEAR_FIFTH);
     }
 
     @Override

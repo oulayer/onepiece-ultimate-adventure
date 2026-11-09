@@ -15,5 +15,8 @@ public final class ModItems {
     public static final RegistryObject<Item> GOMU_GOMU_NO_MI = ITEMS.register("gomu_gomu_no_mi",
             () -> new DevilFruitItem(DevilFruits.GOMU_GOMU_ID, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
 
+    public static final RegistryObject<Item> TORI_TORI_PHOENIX = ITEMS.register("tori_tori_no_mi_phoenix",
+            () -> new DevilFruitItem(DevilFruits.TORI_PHOENIX_ID, new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
+
     private ModItems() {}
 }

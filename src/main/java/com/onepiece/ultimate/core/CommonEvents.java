@@ -11,7 +11,6 @@ import com.onepiece.ultimate.data.OPCapabilities;
 import com.onepiece.ultimate.data.OPPlayerData;
 import com.onepiece.ultimate.destruction.DestructionManager;
 import com.onepiece.ultimate.entity.DebrisEntity;
-import com.onepiece.ultimate.fruit.gomu.GearSecondAbility;
 import com.onepiece.ultimate.progression.ProgressionManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -92,7 +91,7 @@ public final class CommonEvents {
             d.combat.reset();
             com.onepiece.ultimate.haki.HakiManager.reset(d);
             com.onepiece.ultimate.haki.HakiManager.checkAwakenings(player, d);
-            GearSecondAbility.cleanup(player);
+            com.onepiece.ultimate.ability.TransformationAbility.cleanup(player);
             ProgressionManager.applyAttributes(player, d);
             d.markFull();
             d.markVisual();
@@ -121,13 +120,17 @@ public final class CommonEvents {
 
     @SubscribeEvent
     public static void serverTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) LaunchTracker.tick();
+        if (event.phase == TickEvent.Phase.END) {
+            LaunchTracker.tick();
+            com.onepiece.ultimate.combat.ToonPhysics.tick();
+        }
     }
 
     @SubscribeEvent
     public static void serverStopped(ServerStoppedEvent event) {
         DestructionManager.clear();
         LaunchTracker.clear();
+        com.onepiece.ultimate.combat.ToonPhysics.clear();
         DebrisEntity.clearCounts();
     }
 

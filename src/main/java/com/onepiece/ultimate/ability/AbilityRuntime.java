@@ -16,6 +16,12 @@ public final class AbilityRuntime {
     public int channelSlot = -1;
     public int channelBar = -1;
     public int channelTicks;
+    /** Game time until which a transformation's activation sequence locks the player. */
+    public long transformLockUntil;
+    /** Mid-air jumps used since last touching the ground (Boundman bounces, wing flaps…). */
+    public int airJumps;
+    /** Damage queued to be regenerated (Phoenix flames). */
+    public float regenPool;
 
     /** Ticks each active toggle has been running. */
     public final Map<ResourceLocation, Integer> toggleTicks = new HashMap<>();

@@ -35,6 +35,8 @@ public class StretchFistRenderer extends EntityRenderer<StretchFistEntity> {
             new float[]{36, 52, 40, 64}, new float[]{44, 52, 48, 64}, new float[]{40, 52, 44, 64}, new float[]{32, 52, 36, 64},
             new float[]{36, 48, 40, 52}, new float[]{40, 48, 44, 52});
 
+    private static final ResourceLocation WHITE = com.onepiece.ultimate.OnePieceMod.id("textures/particle/white.png");
+
     public StretchFistRenderer(EntityRendererProvider.Context ctx) {
         super(ctx);
     }
@@ -70,15 +72,19 @@ public class StretchFistRenderer extends EntityRenderer<StretchFistEntity> {
         Vec3 dir = axis.normalize();
 
         float scale = e.fistScale();
-        boolean gigant = e.style() == StretchFistEntity.Style.GIGANT;
+        boolean gigant = e.style() == StretchFistEntity.Style.GIGANT || e.style() == StretchFistEntity.Style.DAWN && e.fistScale() > 2f;
         float r = 1f, g = 1f, b = 1f;
         if (e.style() == StretchFistEntity.Style.JET) { g = 0.68f; b = 0.66f; }
+        boolean dawn = e.style() == StretchFistEntity.Style.DAWN;
+        if (dawn) light = 0xF000F0;
         var ownerData = com.onepiece.ultimate.data.OPCapabilities.getOrNull(owner);
-        if (ownerData != null && ownerData.isToggleActive(com.onepiece.ultimate.haki.HakiAbilities.ARMAMENT.id())) {
+        if (dawn) {
+            r = g = b = 1f; // Gear Fifth: radiant white
+        } else if (ownerData != null && ownerData.isToggleActive(com.onepiece.ultimate.haki.HakiAbilities.ARMAMENT.id())) {
             r = 0.16f; g = 0.12f; b = 0.22f; // coated with Armament Haki
         }
 
-        VertexConsumer vc = buffers.getBuffer(RenderType.entityCutoutNoCull(owner.getSkinTextureLocation()));
+        VertexConsumer vc = buffers.getBuffer(RenderType.entityCutoutNoCull(dawn ? WHITE : owner.getSkinTextureLocation()));
         PoseStack.Pose last = ps.last();
         Matrix4f m = last.pose();
         Matrix3f n = last.normal();

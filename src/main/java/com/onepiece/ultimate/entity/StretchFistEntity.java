@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * ability that launched it, keeping the entity generic: Pistol, Gatling and Gigant Pistol all reuse it.
  */
 public class StretchFistEntity extends Projectile {
-    public enum Style { NORMAL, JET, GIGANT }
+    public enum Style { NORMAL, JET, GIGANT, DAWN }
 
     private static final EntityDataAccessor<Byte> SIDE = SynchedEntityData.defineId(StretchFistEntity.class, EntityDataSerializers.BYTE);
     private static final EntityDataAccessor<Float> SCALE = SynchedEntityData.defineId(StretchFistEntity.class, EntityDataSerializers.FLOAT);
@@ -47,6 +47,8 @@ public class StretchFistEntity extends Projectile {
     @Nullable private Consumer<LivingEntity> onHitEntity;
     @Nullable private BiConsumer<BlockHitResult, Boolean> onHitBlock; // (hit, isFinal)
     @Nullable private Consumer<Vec3> onTravel;
+    @Nullable private LivingEntity homingTarget;
+    private double turnRate;
 
     public StretchFistEntity(EntityType<? extends StretchFistEntity> type, Level level) {
         super(type, level);
@@ -73,6 +75,8 @@ public class StretchFistEntity extends Projectile {
     public StretchFistEntity onHitEntity(Consumer<LivingEntity> c) { this.onHitEntity = c; return this; }
     public StretchFistEntity onHitBlock(BiConsumer<BlockHitResult, Boolean> c) { this.onHitBlock = c; return this; }
     public StretchFistEntity onTravel(Consumer<Vec3> c) { this.onTravel = c; return this; }
+    /** The fist bends toward {@code target} each tick (0..1 = how sharply it can turn). */
+    public StretchFistEntity homing(@Nullable LivingEntity target, double turnRate) { this.homingTarget = target; this.turnRate = turnRate; return this; }
 
     @Override
     protected void defineSynchedData() {
@@ -144,6 +148,16 @@ public class StretchFistEntity extends Projectile {
         }
 
         Vec3 vel = getDeltaMovement();
+        if (homingTarget != null && homingTarget.isAlive() && !hitIds.contains(homingTarget.getId())) {
+            Vec3 want = homingTarget.getBoundingBox().getCenter().subtract(center);
+            if (want.lengthSqr() > 1e-4) {
+                Vec3 cur = vel.normalize();
+                Vec3 dir = cur.add(want.normalize().subtract(cur).scale(turnRate)).normalize();
+                vel = dir.scale(speed);
+                setDeltaMovement(vel);
+                lookAlong(dir);
+            }
+        }
         Vec3 next = center.add(vel);
         float radius = 0.35f * fistScale();
 

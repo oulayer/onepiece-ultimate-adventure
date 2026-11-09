@@ -13,13 +13,17 @@ public final class ClientPacketHandler {
     public static void handleOwnerData(SyncOwnerDataPacket p) {
         Player player = Minecraft.getInstance().player;
         OPCapabilities.get(player).ifPresent(d -> d.loadForOwner(p.tag()));
+        if (player != null) player.refreshDimensions();
     }
 
     public static void handleVisual(SyncVisualPacket p) {
         var level = Minecraft.getInstance().level;
         if (level == null) return;
         Entity e = level.getEntity(p.entityId());
-        if (e instanceof Player player) OPCapabilities.get(player).ifPresent(d -> d.loadVisual(p.tag()));
+        if (e instanceof Player player) {
+            OPCapabilities.get(player).ifPresent(d -> d.loadVisual(p.tag()));
+            player.refreshDimensions(); // transformations may change the hitbox
+        }
     }
 
     public static void handleStats(SyncStatsPacket p) {

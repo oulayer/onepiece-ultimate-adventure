@@ -20,21 +20,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class GatlingAbility extends Ability {
     private final boolean jet;
-    @Nullable private final Ability jetVariant;
 
-    GatlingAbility(boolean jet, @Nullable Ability jetVariant) {
+    GatlingAbility(boolean jet) {
         super(jet ? "gomu_jet_gatling" : "gomu_gatling", Properties.of(Activation.HOLD)
                 .cost(15).drain(jet ? 0.8f : 0.6f).maxHold(jet ? 50 : 60).cooldown(120).mastery(10)
                 .channelAnimation(jet ? "gomu_jet_gatling" : "gomu_gatling")
                 .sharesCooldownWith(OnePieceMod.id("gomu_gatling"))
                 .color(jet ? GomuFx.JET_COLOR : GomuFx.RUBBER_COLOR));
         this.jet = jet;
-        this.jetVariant = jetVariant;
-    }
-
-    @Override
-    public Ability resolve(OPPlayerData data) {
-        return jetVariant != null && data.isToggleActive(GomuAbilities.GEAR_SECOND.id()) ? jetVariant : this;
     }
 
     @Override

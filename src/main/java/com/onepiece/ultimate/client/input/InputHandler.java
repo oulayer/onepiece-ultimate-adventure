@@ -24,6 +24,7 @@ public final class InputHandler {
     private static final boolean[] hakiDown = new boolean[KeyBindings.HAKI_SLOTS];
     private static boolean blockDown;
     private static boolean heavyHeld;
+    private static boolean jumpDown;
 
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
@@ -55,6 +56,19 @@ public final class InputHandler {
         while (KeyBindings.DASH.consumeClick()) {
             if (canAct) OPNetwork.sendToServer(new CombatInputPacket(CombatAction.DASH, player.input.forwardImpulse, player.input.leftImpulse));
         }
+        while (KeyBindings.TRANSFORM.consumeClick()) {
+            if (mc.screen == null && canAct && data.fruit() != null && !data.fruit().transformations().isEmpty()) {
+                mc.setScreen(new com.onepiece.ultimate.client.screen.TransformationWheelScreen());
+            }
+        }
+        // jump in mid-air: transformations may bounce / flap / dash
+        boolean jump = canAct && mc.options.keyJump.isDown();
+        if (jump && !jumpDown && !player.onGround() && !player.getAbilities().flying && !player.isInWater()
+                && com.onepiece.ultimate.ability.TransformationAbility.active(data) != null) {
+            OPNetwork.sendToServer(new CombatInputPacket(CombatAction.AIR_JUMP, 0, 0));
+        }
+        jumpDown = jump;
+
         while (KeyBindings.CHARACTER.consumeClick()) {
             if (mc.screen == null) mc.setScreen(new CharacterScreen());
         }

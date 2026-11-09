@@ -10,9 +10,9 @@ import java.util.List;
 
 public final class KeyBindings {
     public static final String CATEGORY = "key.categories.onepiece";
-    public static final int ABILITY_SLOTS = 7;
+    public static final int ABILITY_SLOTS = 6;
     private static final int[] DEFAULT_ABILITY_KEYS = {
-            GLFW.GLFW_KEY_Z, GLFW.GLFW_KEY_X, GLFW.GLFW_KEY_C, GLFW.GLFW_KEY_V, GLFW.GLFW_KEY_B, GLFW.GLFW_KEY_N, GLFW.GLFW_KEY_M
+            GLFW.GLFW_KEY_Z, GLFW.GLFW_KEY_X, GLFW.GLFW_KEY_C, GLFW.GLFW_KEY_V, GLFW.GLFW_KEY_B, GLFW.GLFW_KEY_N
     };
 
     public static final KeyMapping[] ABILITIES = new KeyMapping[ABILITY_SLOTS];
@@ -26,6 +26,8 @@ public final class KeyBindings {
     public static final KeyMapping DASH = key("dash", GLFW.GLFW_KEY_LEFT_ALT);
     public static final KeyMapping BLOCK = key("block", GLFW.GLFW_KEY_R);
     public static final KeyMapping CHARACTER = key("character", GLFW.GLFW_KEY_K);
+    /** Hold to open the transformation wheel, release over a form to toggle it. */
+    public static final KeyMapping TRANSFORM = key("transform", GLFW.GLFW_KEY_M);
 
     static {
         for (int i = 0; i < ABILITY_SLOTS; i++) ABILITIES[i] = key("ability_" + (i + 1), DEFAULT_ABILITY_KEYS[i]);
@@ -43,6 +45,7 @@ public final class KeyBindings {
         list.add(DASH);
         list.add(BLOCK);
         list.add(CHARACTER);
+        list.add(TRANSFORM);
         return list;
     }
 

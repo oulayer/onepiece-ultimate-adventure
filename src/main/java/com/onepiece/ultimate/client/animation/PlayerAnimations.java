@@ -101,6 +101,10 @@ public final class PlayerAnimations {
             POSE.write(Bone.RIGHT_LEG, model.rightLeg);
             POSE.write(Bone.LEFT_LEG, model.leftLeg);
         }
+        if (animate && player instanceof net.minecraft.client.player.AbstractClientPlayer acp) {
+            var visual = com.onepiece.ultimate.client.transform.TransformationVisuals.of(player);
+            if (visual != null) visual.applyModel(model, acp, partial);
+        }
         long now = player.level().getGameTime();
         model.rightArm.visible = !FistVisibility.rightHidden(player.getId(), now);
         model.leftArm.visible = !FistVisibility.leftHidden(player.getId(), now);
@@ -109,15 +113,24 @@ public final class PlayerAnimations {
     /** Whole-body transform (lean, spin, squash), applied in RenderPlayerEvent.Pre. Returns true if pushed. */
     public static boolean applyRoot(Player player, PoseStack stack, float partial) {
         AnimationController c = CONTROLLERS.get(player.getId());
-        if (c == null || c.isIdle()) return false;
-        c.applyRoot(POSE, partial);
+        var visual = com.onepiece.ultimate.client.transform.TransformationVisuals.of(player);
+        float formScale = visual == null ? 1f : visual.rootScale();
+        if ((c == null || c.isIdle()) && formScale == 1f) return false;
+        if (c != null && !c.isIdle()) c.applyRoot(POSE, partial);
+        else POSE.reset();
+        if (formScale != 1f) {
+            int o = Bone.ROOT.ordinal() * Pose.STRIDE;
+            POSE.v[o + 6] *= formScale;
+            POSE.v[o + 7] *= formScale;
+            POSE.v[o + 8] *= formScale;
+        }
         float rx = POSE.get(Bone.ROOT, 0), ry = POSE.get(Bone.ROOT, 1), rz = POSE.get(Bone.ROOT, 2);
         float px = POSE.get(Bone.ROOT, 3), py = POSE.get(Bone.ROOT, 4), pz = POSE.get(Bone.ROOT, 5);
         float sx = POSE.get(Bone.ROOT, 6), sy = POSE.get(Bone.ROOT, 7), sz = POSE.get(Bone.ROOT, 8);
         if (rx == 0 && ry == 0 && rz == 0 && px == 0 && py == 0 && pz == 0 && sx == 1 && sy == 1 && sz == 1) return false;
 
         float bodyYaw = Mth.rotLerp(partial, player.yBodyRotO, player.yBodyRot);
-        float pivot = c.rootPivot();
+        float pivot = c == null || c.isIdle() ? 0f : c.rootPivot();
         stack.pushPose();
         // Work in the body's frame: +X right, +Y up, -Z forward.
         stack.mulPose(Axis.YP.rotationDegrees(180f - bodyYaw));

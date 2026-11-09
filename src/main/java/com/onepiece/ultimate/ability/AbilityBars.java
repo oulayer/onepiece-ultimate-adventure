@@ -11,11 +11,13 @@ import java.util.List;
 public final class AbilityBars {
     public static final int FRUIT = 0;
     public static final int HAKI = 1;
+    public static final int TRANSFORM = 2;
 
     public static List<Ability> bar(OPPlayerData data, int bar) {
         if (bar == HAKI) return HakiAbilities.all();
         DevilFruit fruit = data.fruit();
-        return fruit == null ? List.of() : fruit.abilities();
+        if (fruit == null) return List.of();
+        return bar == TRANSFORM ? fruit.transformations() : fruit.abilities();
     }
 
     /** The slot's base ability (before transformation variants). */

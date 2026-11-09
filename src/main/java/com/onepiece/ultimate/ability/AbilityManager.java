@@ -18,7 +18,7 @@ import java.util.List;
  */
 public final class AbilityManager {
 
-    public enum Result { SUCCESS, NO_ABILITY, LOCKED, COOLDOWN, NO_ENERGY, WEAKENED, STUNNED, BUSY, REFUSED, RELEASED, TOGGLED_OFF }
+    public enum Result { SUCCESS, NO_ABILITY, LOCKED, COOLDOWN, NO_ENERGY, WEAKENED, STUNNED, BUSY, REFUSED, RELEASED, TOGGLED_OFF, EXHAUSTED }
 
     // ================================================================== input
 
@@ -38,7 +38,18 @@ public final class AbilityManager {
     @Nullable
     public static Ability abilityInSlot(OPPlayerData data, int bar, int slot) {
         Ability base = AbilityBars.base(data, bar, slot);
-        return base == null ? null : base.resolve(data);
+        return base == null ? null : resolve(data, base);
+    }
+
+    /** The ability that actually fires for a slot: transformation variants first, then the ability's own variant. */
+    public static Ability resolve(OPPlayerData data, Ability base) {
+        for (ResourceLocation id : data.activeToggles()) {
+            if (AbilityRegistry.get(id) instanceof TransformationAbility t) {
+                Ability v = t.variantOf(base);
+                if (v != null) return v;
+            }
+        }
+        return base.resolve(data);
     }
 
     /** Fruit bar shortcut. */
@@ -49,7 +60,7 @@ public final class AbilityManager {
     public static Result press(ServerPlayer player, OPPlayerData data, int bar, int slot) {
         Ability base = AbilityBars.base(data, bar, slot);
         if (base == null) return Result.NO_ABILITY;
-        Ability ability = base.resolve(data);
+        Ability ability = resolve(data, base);
         AbilityRuntime rt = data.abilities;
 
         // Toggles switch off with the same key, regardless of anything else.
@@ -104,6 +115,9 @@ public final class AbilityManager {
 
     private static Result canUse(ServerPlayer player, OPPlayerData data, Ability base, Ability ability) {
         if (!ability.isUnlocked(data)) return Result.LOCKED;
+        if (player.level().getGameTime() < data.abilities.transformLockUntil) return Result.BUSY;
+        if (ability instanceof com.onepiece.ultimate.haki.HakiAbility
+                && player.level().getGameTime() < data.hakiRuntime.exhaustedUntil) return Result.EXHAUSTED;
         if (data.seaWeakened()) return Result.WEAKENED;
         if (player.hasEffect(ModEffects.STUNNED.get())) return Result.STUNNED;
         if (data.cooldowns().isCooling(base.cooldownKey())) return Result.COOLDOWN;
@@ -222,6 +236,7 @@ public final class AbilityManager {
                         .withStyle(ChatFormatting.GOLD);
             }
             case WEAKENED -> Component.translatable("message.onepiece.weakened").withStyle(ChatFormatting.AQUA);
+            case EXHAUSTED -> Component.translatable("message.onepiece.haki_exhausted").withStyle(ChatFormatting.DARK_PURPLE);
             default -> null;
         };
         if (msg != null) player.displayClientMessage(msg, true);

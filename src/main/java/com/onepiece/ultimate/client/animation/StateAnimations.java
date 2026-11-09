@@ -23,6 +23,13 @@ public final class StateAnimations {
         if (data.seaWeakened()) return "sea_weak";
         if (player.isSwimming() || player.isFallFlying() || player.isPassenger() || player.isSleeping()) return null;
         boolean moving = player.walkAnimation.speed() > 0.25f;
+        if (player instanceof net.minecraft.client.player.AbstractClientPlayer acp) {
+            var visual = com.onepiece.ultimate.client.transform.TransformationVisuals.of(player);
+            if (visual != null) {
+                String stance = visual.stance(acp, moving);
+                if (stance != null) return stance;
+            }
+        }
         if (data.isToggleActive(GomuAbilities.GEAR_SECOND.id())) return moving ? "gear_second_run" : "gear_second_stance";
         if (data.combatMode()) {
             return CombatManager.isBlade(player.getMainHandItem()) ? "combat_stance_sword" : "combat_stance";

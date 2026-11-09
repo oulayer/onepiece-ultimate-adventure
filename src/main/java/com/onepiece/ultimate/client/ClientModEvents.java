@@ -10,7 +10,6 @@ import com.onepiece.ultimate.client.particle.ImpactSparkParticle;
 import com.onepiece.ultimate.client.particle.RingParticle;
 import com.onepiece.ultimate.client.particle.SteamParticle;
 import com.onepiece.ultimate.client.render.DebrisRenderer;
-import com.onepiece.ultimate.client.render.GearSecondLayer;
 import com.onepiece.ultimate.client.render.StretchFistRenderer;
 import com.onepiece.ultimate.registry.ModEntities;
 import com.onepiece.ultimate.registry.ModParticles;
@@ -76,7 +75,7 @@ public final class ClientModEvents {
             AnimatedPlayerModel model = new AnimatedPlayerModel(
                     event.getEntityModels().bakeLayer(slim ? ModelLayers.PLAYER_SLIM : ModelLayers.PLAYER), slim);
             ((LivingEntityRenderer) renderer).model = model;
-            renderer.addLayer(new GearSecondLayer(renderer));
+            renderer.addLayer(new com.onepiece.ultimate.client.render.TransformationLayer(renderer));
             renderer.addLayer(new com.onepiece.ultimate.client.render.ArmamentLayer(renderer));
         }
     }

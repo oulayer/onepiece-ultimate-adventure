@@ -269,6 +269,22 @@ public final class HakiManager {
         }
     }
 
+    /** Switches a Haki toggle on without cost or checks (used by forms that need the coating, e.g. Gear Fourth). */
+    public static void forceToggle(ServerPlayer player, OPPlayerData data, com.onepiece.ultimate.ability.Ability toggle) {
+        if (data.isToggleActive(toggle.id()) || !data.haki().isAwakened(HakiType.ARMAMENT)) return;
+        data.setToggle(toggle.id(), true);
+        data.abilities.toggleTicks.put(toggle.id(), 0);
+        toggle.onActivate(com.onepiece.ultimate.ability.AbilityContext.of(player, data));
+    }
+
+    /** Haki burns out: active Haki ends and no Haki can be used for {@code ticks}. */
+    public static void exhaust(ServerPlayer player, OPPlayerData data, int ticks) {
+        data.hakiRuntime.exhaustedUntil = player.level().getGameTime() + ticks;
+        for (var a : HakiAbilities.all()) com.onepiece.ultimate.ability.AbilityManager.endToggle(player, data, a, true);
+        data.setHakiGauge(0);
+        player.displayClientMessage(Component.translatable("message.onepiece.haki_exhausted").withStyle(ChatFormatting.DARK_PURPLE), true);
+    }
+
     public static void reset(OPPlayerData data) {
         data.hakiRuntime.reset();
         data.setFutureSight(false);

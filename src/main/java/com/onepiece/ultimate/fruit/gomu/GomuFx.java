@@ -53,5 +53,30 @@ final class GomuFx {
         };
     }
 
+    /** The living target closest to the crosshair inside a cone, for homing attacks. */
+    @org.jetbrains.annotations.Nullable
+    static LivingEntity bestTarget(AbilityContext ctx, double range, double coneDegrees) {
+        ServerPlayer p = ctx.player();
+        Vec3 eye = p.getEyePosition(), look = ctx.look();
+        double cos = Math.cos(Math.toRadians(coneDegrees));
+        LivingEntity best = null;
+        double bestScore = -1;
+        for (var e : ctx.level().getEntities(p, p.getBoundingBox().inflate(range), x -> x instanceof LivingEntity)) {
+            LivingEntity le = (LivingEntity) e;
+            if (!com.onepiece.ultimate.combat.HitDetector.isValidTarget(p, le)) continue;
+            Vec3 to = le.getBoundingBox().getCenter().subtract(eye);
+            double d = to.length();
+            if (d > range || d < 1e-3) continue;
+            double dot = to.scale(1 / d).dot(look);
+            if (dot < cos || !com.onepiece.ultimate.combat.HitDetector.hasLineOfSight(ctx.level(), eye, le.getBoundingBox().getCenter(), p)) continue;
+            double score = dot * 2 - d / range;
+            if (score > bestScore) {
+                bestScore = score;
+                best = le;
+            }
+        }
+        return best;
+    }
+
     private GomuFx() {}
 }

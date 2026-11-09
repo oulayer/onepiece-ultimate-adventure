@@ -21,6 +21,7 @@ public abstract class DevilFruit {
     private final FruitRarity rarity;
     private final int color;
     private List<Ability> abilities = List.of();
+    private List<Ability> transformations = List.of();
 
     protected DevilFruit(ResourceLocation id, FruitType type, FruitRarity rarity, int color) {
         this.id = id;
@@ -32,8 +33,18 @@ public abstract class DevilFruit {
     /** Called once at bootstrap; abilities must be registered in AbilityRegistry by the implementation. */
     protected abstract List<Ability> createAbilities();
 
+    /** Forms selectable on the transformation wheel. */
+    protected List<Ability> createTransformations() {
+        return List.of();
+    }
+
     final void init() {
         this.abilities = List.copyOf(createAbilities());
+        this.transformations = List.copyOf(createTransformations());
+    }
+
+    public List<Ability> transformations() {
+        return transformations;
     }
 
     // ------------------------------------------------------------------ passive hooks (server)

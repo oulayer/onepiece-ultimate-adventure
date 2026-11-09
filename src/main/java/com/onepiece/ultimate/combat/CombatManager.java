@@ -75,11 +75,16 @@ public final class CombatManager {
             case DASH -> dash(player, data, forward, strafe);
             case BLOCK_PRESS -> startBlocking(player, data);
             case BLOCK_RELEASE -> stopBlocking(player, data);
+            case AIR_JUMP -> {
+                var t = com.onepiece.ultimate.ability.TransformationAbility.active(data);
+                if (t != null && !player.onGround() && !busy(player, data)) t.onAirJump(com.onepiece.ultimate.ability.AbilityContext.of(player, data));
+            }
         }
     }
 
     private static boolean busy(ServerPlayer player, OPPlayerData data) {
-        return player.hasEffect(ModEffects.STUNNED.get()) || data.abilities.channeling != null || player.isUsingItem();
+        return player.hasEffect(ModEffects.STUNNED.get()) || data.abilities.channeling != null || player.isUsingItem()
+                || player.level().getGameTime() < data.abilities.transformLockUntil;
     }
 
     // ================================================================== light combo

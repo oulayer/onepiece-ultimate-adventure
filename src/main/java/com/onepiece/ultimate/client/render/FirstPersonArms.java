@@ -43,9 +43,14 @@ public final class FirstPersonArms {
         if (player == null || player.isSpectator() || player.isInvisible() || !player.getMainHandItem().isEmpty()) return;
         OPPlayerData data = OPCapabilities.getOrNull(player);
         if (data == null) return;
+        var visual = com.onepiece.ultimate.client.transform.TransformationVisuals.of(player);
+        if (visual != null && visual.hidesFirstPersonArms()) {
+            event.setCanceled(true);
+            return;
+        }
         AnimationController c = PlayerAnimations.existing(player.getId());
         boolean animated = c != null && c.hasFirstPerson();
-        boolean powers = data.isToggleActive(HakiAbilities.ARMAMENT.id()) || data.isToggleActive(GomuAbilities.GEAR_SECOND.id());
+        boolean powers = data.isToggleActive(HakiAbilities.ARMAMENT.id()) || visual != null;
         if (!data.combatMode() && !animated && !powers) return;
 
         event.setCanceled(true);
@@ -81,7 +86,9 @@ public final class FirstPersonArms {
         ps.mulPose(Axis.XP.rotationDegrees(200f));
         ps.mulPose(Axis.YP.rotationDegrees(f * -135f));
         ps.translate(f * 5.6f, 0f, 0f);
-        if (sx != 1 || sy != 1 || sz != 1) ps.scale(sx, sy, sz);
+        var visual = com.onepiece.ultimate.client.transform.TransformationVisuals.of(player);
+        float form = visual == null ? 1f : visual.firstPersonArmScale();
+        if (sx != 1 || sy != 1 || sz != 1 || form != 1) ps.scale(sx * form, sy * form, sz * form);
 
         PlayerRenderer renderer = (PlayerRenderer) Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player);
         if (right) renderer.renderRightHand(ps, buffers, light, player);
@@ -90,13 +97,8 @@ public final class FirstPersonArms {
         PlayerModel<AbstractClientPlayer> m = renderer.getModel();
         ModelPart arm = right ? m.rightArm : m.leftArm;
         ModelPart sleeve = right ? m.rightSleeve : m.leftSleeve;
-        if (data.isToggleActive(HakiAbilities.ARMAMENT.id())) {
-            ArmamentVisuals.render(ps, buffers, light, player, partial, arm, sleeve);
-        } else if (data.isToggleActive(GomuAbilities.GEAR_SECOND.id()) && arm.visible) {
-            float a = 0.32f + 0.12f * Mth.sin((player.tickCount + partial) * 0.35f);
-            var vc = buffers.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation()));
-            arm.render(ps, vc, light, OverlayTexture.NO_OVERLAY, 1f, 0.25f, 0.22f, a);
-        }
+        if (data.isToggleActive(HakiAbilities.ARMAMENT.id())) ArmamentVisuals.render(ps, buffers, light, player, partial, arm, sleeve);
+        if (visual != null) visual.renderFirstPersonArm(ps, buffers, light, player, arm, sleeve, right, partial);
         ps.popPose();
     }
 

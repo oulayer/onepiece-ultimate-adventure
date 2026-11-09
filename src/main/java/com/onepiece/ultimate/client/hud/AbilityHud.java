@@ -46,7 +46,8 @@ public final class AbilityHud {
         if (fruit == null && !haki && !data.combatMode() && OPClientConfig.HIDE_HUD_WITHOUT_POWERS.get()) return;
 
         Font font = mc.font;
-        int slots = fruit == null ? 0 : fruit.abilities().size();
+        int forms = fruit == null ? 0 : fruit.transformations().size();
+        int slots = fruit == null ? 0 : fruit.abilities().size() + (forms > 0 ? 1 : 0);
         int hakiSlots = haki ? HakiAbilities.all().size() : 0;
         int width = Math.max(120, Math.max(slots * SLOT + Math.max(0, slots - 1) * GAP, hakiSlots * HSLOT + Math.max(0, hakiSlots - 1) * GAP));
         int height = 10 + 2 + 5 + (haki ? 4 : 0) + (hakiSlots > 0 ? 4 + HSLOT : 0) + (slots > 0 ? 4 + SLOT : 0);
@@ -142,10 +143,12 @@ public final class AbilityHud {
         // ---- ability slots
         if (fruit != null) {
             int sy = cy + 4;
-            for (int i = 0; i < slots; i++) {
+            int n = fruit.abilities().size();
+            for (int i = 0; i < n; i++) {
                 int sx = x + i * (SLOT + GAP);
                 drawSlot(g, font, data, AbilityBars.FRUIT, i, sx, sy, SLOT, time);
             }
+            if (forms > 0) drawFormSlot(g, font, data, x + n * (SLOT + GAP) + 3, sy, time);
         }
 
         RenderSystem.disableBlend();
@@ -216,6 +219,27 @@ public final class AbilityHud {
             g.pose().translate(x + 2, y + 2, 200);
             g.pose().scale(0.5f, 0.5f, 1f);
             g.drawString(font, key, 0, 0, 0xFFFFE27A, true);
+            g.pose().popPose();
+        }
+    }
+
+    /** The transformation slot: active form (or the wheel key hint) – opened with the transformation key. */
+    private static void drawFormSlot(GuiGraphics g, Font font, OPPlayerData data, int x, int y, float time) {
+        var forms = data.fruit().transformations();
+        int active = -1;
+        for (int i = 0; i < forms.size(); i++) if (data.isToggleActive(forms.get(i).id())) active = i;
+        Ability shown = forms.get(Math.max(0, active));
+        int border = active >= 0 ? pulseColor(shown.color(), time) : 0xFF6A5326;
+        g.fill(x, y, x + SLOT, y + SLOT, border);
+        g.fill(x + 1, y + 1, x + SLOT - 1, y + SLOT - 1, 0xE0181818);
+        if (active < 0) g.setColor(0.55f, 0.55f, 0.55f, 1f);
+        g.blit(shown.icon(), x + 3, y + 3, SLOT - 6, SLOT - 6, 0, 0, 32, 32, 32, 32);
+        g.setColor(1, 1, 1, 1);
+        if (OPClientConfig.SHOW_KEY_HINTS.get()) {
+            g.pose().pushPose();
+            g.pose().translate(x + 2, y + 2, 200);
+            g.pose().scale(0.5f, 0.5f, 1f);
+            g.drawString(font, KeyBindings.shortName(KeyBindings.TRANSFORM), 0, 0, 0xFFFFE27A, true);
             g.pose().popPose();
         }
     }

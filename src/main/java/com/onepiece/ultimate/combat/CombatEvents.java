@@ -69,6 +69,10 @@ public final class CombatEvents {
         if (attacker == null && direct == null) return; // environmental damage can't be dodged or parried
         if (attacker == player) return;
 
+        if (now < data.abilities.transformLockUntil) { // transformation sequence: untouchable
+            event.setCanceled(true);
+            return;
+        }
         if (now < data.combat.iframesUntil) {
             event.setCanceled(true);
             CombatManager.perfectDodge(player, data);
@@ -159,7 +163,8 @@ public final class CombatEvents {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         OPPlayerData data = OPCapabilities.getOrNull(player);
         if (data == null) return;
-        if (CombatManager.ignoresFall(data, player.level().getGameTime())) {
+        var form = com.onepiece.ultimate.ability.TransformationAbility.active(data);
+        if (CombatManager.ignoresFall(data, player.level().getGameTime()) || (form != null && form.ignoresFall())) {
             event.setDistance(0);
             event.setDamageMultiplier(0);
             return;

@@ -30,9 +30,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class BazookaAbility extends Ability {
     private final boolean jet;
-    @Nullable private final Ability jetVariant;
 
-    BazookaAbility(boolean jet, @Nullable Ability jetVariant) {
+    BazookaAbility(boolean jet) {
         super(jet ? "gomu_jet_bazooka" : "gomu_bazooka", Properties.of(Activation.CHARGE)
                 .cost(25).cooldown(jet ? 120 : 160).mastery(22)
                 .charge(jet ? 4 : 8, jet ? 14 : 24)
@@ -40,12 +39,6 @@ public final class BazookaAbility extends Ability {
                 .sharesCooldownWith(OnePieceMod.id("gomu_bazooka"))
                 .color(jet ? GomuFx.JET_COLOR : GomuFx.RUBBER_COLOR));
         this.jet = jet;
-        this.jetVariant = jetVariant;
-    }
-
-    @Override
-    public Ability resolve(OPPlayerData data) {
-        return jetVariant != null && data.isToggleActive(GomuAbilities.GEAR_SECOND.id()) ? jetVariant : this;
     }
 
     @Override

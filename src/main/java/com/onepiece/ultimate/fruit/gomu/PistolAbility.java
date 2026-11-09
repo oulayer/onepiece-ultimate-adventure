@@ -19,20 +19,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class PistolAbility extends Ability {
     private final boolean jet;
-    @Nullable private final Ability jetVariant;
 
-    PistolAbility(boolean jet, @Nullable Ability jetVariant) {
+    PistolAbility(boolean jet) {
         super(jet ? "gomu_jet_pistol" : "gomu_pistol", Properties.of(Activation.INSTANT)
                 .cost(jet ? 16 : 12).cooldown(jet ? 20 : 26).mastery(0)
                 .sharesCooldownWith(OnePieceMod.id("gomu_pistol"))
                 .color(jet ? GomuFx.JET_COLOR : GomuFx.RUBBER_COLOR));
         this.jet = jet;
-        this.jetVariant = jetVariant;
-    }
-
-    @Override
-    public Ability resolve(OPPlayerData data) {
-        return jetVariant != null && data.isToggleActive(GomuAbilities.GEAR_SECOND.id()) ? jetVariant : this;
     }
 
     @Override

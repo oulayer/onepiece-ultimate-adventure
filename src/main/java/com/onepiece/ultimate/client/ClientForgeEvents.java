@@ -33,6 +33,7 @@ public final class ClientForgeEvents {
             PlayerAnimations.tick();
             KenVision.tick();
             com.onepiece.ultimate.client.render.ArmamentVisuals.tick();
+            com.onepiece.ultimate.client.transform.TransformationVisuals.tick();
             infusionSparks(mc);
             CameraEffects.tick();
             ClientState.tick();
@@ -43,6 +44,16 @@ public final class ClientForgeEvents {
     @SubscribeEvent
     public static void interaction(InputEvent.InteractionKeyMappingTriggered event) {
         InputHandler.onInteraction(event);
+    }
+
+    /** Full Zoan forms replace the player model entirely. */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void replaceBody(RenderPlayerEvent.Pre event) {
+        var visual = com.onepiece.ultimate.client.transform.TransformationVisuals.of(event.getEntity());
+        if (visual != null && visual.replacesBody() && event.getEntity() instanceof net.minecraft.client.player.AbstractClientPlayer p) {
+            event.setCanceled(true);
+            visual.renderBody(event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), p, event.getPartialTick());
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

@@ -25,6 +25,11 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> GOMU_INFLATE = reg("gomu.inflate");
     public static final RegistryObject<SoundEvent> GOMU_GEAR_SECOND = reg("gomu.gear_second");
     public static final RegistryObject<SoundEvent> GOMU_BOUNCE = reg("gomu.bounce");
+    public static final RegistryObject<SoundEvent> GOMU_GEAR_FOURTH = reg("gomu.gear_fourth");
+    public static final RegistryObject<SoundEvent> GOMU_GEAR_FIFTH = reg("gomu.gear_fifth");
+    public static final RegistryObject<SoundEvent> PHOENIX_FLAME = reg("phoenix.flame");
+    public static final RegistryObject<SoundEvent> PHOENIX_CRY = reg("phoenix.cry");
+    public static final RegistryObject<SoundEvent> PHOENIX_WING = reg("phoenix.wing");
 
     public static final RegistryObject<SoundEvent> RUMBLE = reg("destruction.rumble");
 
