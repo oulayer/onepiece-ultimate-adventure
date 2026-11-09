@@ -30,7 +30,7 @@ final class PhoenixFullVisual implements TransformationVisual {
         ModelPart body = bird.getChild("body");
         float age = player.tickCount + partial;
         boolean flying = player.getAbilities().flying || !player.onGround();
-        float flap = flying ? 0.25f + Mth.sin(age * 0.45f) * 0.55f : -0.9f;
+        float flap = flying ? 0.25f + Mth.sin(age * 0.45f) * 0.55f : -0.45f;
         body.getChild("wing_r").zRot = -flap;
         body.getChild("wing_l").zRot = flap;
         body.getChild("wing_r").getChild("tip").zRot = -flap * 0.6f;
@@ -43,7 +43,9 @@ final class PhoenixFullVisual implements TransformationVisual {
         ps.pushPose();
         ps.translate(0, flying ? 0.55 : 0.45, 0);
         ps.mulPose(Axis.YP.rotationDegrees(-player.getViewYRot(partial)));
-        ps.scale(1 / 16f, 1 / 16f, 1 / 16f);
+        // ModelPart already works in 1/16 block units. Mirror one axis: boxes are wound for vanilla's flipped model
+        // space, so without it every face would be back-face culled (the bird is symmetric, so the mirror is invisible).
+        ps.scale(-1f, 1f, 1f);
         bird.render(ps, buffers.getBuffer(RenderType.entityTranslucentEmissive(PhoenixModels.TEXTURE)), 0xF000F0, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 0.95f);
         bird.render(ps, buffers.getBuffer(RenderType.energySwirl(ArmamentVisuals.FLAME, (age * 0.02f) % 1f, (age * 0.05f) % 1f)), 0xF000F0,
                 OverlayTexture.NO_OVERLAY, 0.1f, 0.45f, 0.95f, 1f);
@@ -53,8 +55,8 @@ final class PhoenixFullVisual implements TransformationVisual {
     @Override
     public void clientTick(AbstractClientPlayer p) {
         var mc = Minecraft.getInstance();
-        if (mc.level == null || (p == mc.player && mc.options.getCameraType().isFirstPerson())) return;
-        for (int i = 0; i < 2; i++) {
+        if (mc.level == null || (p == mc.player && mc.options.getCameraType().isFirstPerson()) || p.tickCount % 2 != 0) return;
+        for (int i = 0; i < 1; i++) {
             mc.level.addParticle(ParticleTypes.SOUL_FIRE_FLAME, p.getX() + (p.getRandom().nextFloat() - 0.5) * 2.5, p.getY() + 0.6,
                     p.getZ() + (p.getRandom().nextFloat() - 0.5) * 2.5, 0, 0.03, 0);
         }

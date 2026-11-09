@@ -161,6 +161,7 @@ public final class ClientAutoTest {
     static {
         if ("fp".equals(MODE)) firstPersonCalibration();
         else if ("forms".equals(MODE)) formsRun();
+        else if ("phoenix".equals(MODE)) phoenixRun();
         else fullRun();
     }
 
@@ -308,6 +309,19 @@ public final class ClientAutoTest {
         at(t + 480, () -> shot("f16_menu_phoenix"));
         at(t + 482, () -> Minecraft.getInstance().setScreen(null));
         at(t + 490, () -> Minecraft.getInstance().stop());
+    }
+
+    private static void phoenixRun() {
+        int t = 60;
+        at(t, () -> server(ClientAutoTest::stage));
+        at(t + 8, () -> setFruit(com.onepiece.ultimate.fruit.DevilFruits.TORI_PHOENIX_ID));
+        at(t + 20, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 22, () -> form(1));
+        at(t + 60, () -> shot("p1_full_ground"));
+        at(t + 62, () -> teleport(0, 6, 0, 0f));
+        at(t + 64, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 80, () -> shot("p2_full_air"));
+        at(t + 90, () -> Minecraft.getInstance().stop());
     }
 
     private static void playPose(float[] v) {

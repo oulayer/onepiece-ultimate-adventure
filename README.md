@@ -12,7 +12,7 @@ Mod de ação/RPG de One Piece para **Minecraft 1.20.1 / Forge 47.4.x** (Java 17
 | 4. Sistema de habilidades | ✅ INSTANT / CHARGE / HOLD / TOGGLE, cooldown, energia, maestria, variantes por transformação |
 | 5. Fruta completa de demonstração | ✅ **Gomu Gomu no Mi** (7 técnicas + 3 variantes Jet + passivas) |
 | 6. Haki | ✅ Busoshoku, Kenbunshoku e Haoshoku com níveis 1–10, versões avançadas (Emissão, Visão do Futuro, Infusão do Rei) |
-| 7. Animações e transformações | 🟡 motor de animação por keyframes pronto (42 animações), Gear Second e Gear Third; Gear 4/5 e Zoans pendentes |
+| 7. Animações e transformações | ✅ framework de transformações, Gear 2/4 (Boundman, Snakeman)/5, Zoan Fênix (híbrida e completa), 68 animações com 1ª pessoa |
 | 8. Chefes | ⏳ |
 | 9. Destruição e efeitos | 🟡 crateras, rachaduras, ondas de choque, túneis, árvores derrubadas, detritos, restauração opcional |
 | 10. HUD, progressão, multiplayer | 🟡 HUD de habilidades, ficha do personagem, níveis/atributos/maestria, sincronização cliente-servidor |
@@ -21,7 +21,7 @@ Mod de ação/RPG de One Piece para **Minecraft 1.20.1 / Forge 47.4.x** (Java 17
 
 ```bash
 ./gradlew build                 # gera build/libs/onepiece-0.1.0.jar (reobfuscado, pronto para a pasta mods)
-./gradlew runGameTestServer     # 17 testes funcionais em servidor headless real
+./gradlew runGameTestServer     # 22 testes funcionais em servidor headless real
 ./gradlew runClient             # cliente de desenvolvimento
 ./gradlew runClient -Pautotest  # roteiro visual automático: cria mundo plano, usa as técnicas e salva screenshots em run/screenshots
 ```
@@ -59,6 +59,20 @@ Pesado no ar = **ataque de queda** com onda de choque e cratera proporcional à 
 | 7 | Gear Third: Gigant Pistol | 45 | infla o braço (escala animada), punho gigante perfura tudo, cava túnel e termina em cratera; encolhe depois |
 
 Passivas: imune a raios, metade do dano contundente (lâminas cortam normalmente), sem dano de queda e quica em quedas altas. Na água do mar perde os poderes, gasta energia e afunda.
+
+## Transformações (etapa 7)
+Segure **`M`** para abrir a **roda de transformações**. Aponte o mouse para uma forma e solte a tecla (ou clique) para ligar ou desligar. A forma ativa aparece no último slot da barra, e as formas são exclusivas entre si (só um Gear por vez). Durante a sequência de ativação você não age, mas também não pode ser ferido. **Pular no ar** aciona a mecânica de cada forma.
+
+| Forma | Requisito | Efeito | Técnicas que mudam |
+|---|---|---|---|
+| Gear Second | maestria 30 | +35% de dano e velocidade, pele vermelha, vapor | Jet Pistol, Jet Gatling, Jet Bazooka |
+| Gear Fourth: **Boundman** | maestria 60 + Armamento Nv4 | corpo enorme e revestido, quica sem parar, 3 quiques no ar, +80% de dano, −40% de dano recebido, hitbox maior. **Ao terminar: Haki esgotado por 30 s** | Kong Gun, Kong Organ, Leo Bazooka, King Kong Gun |
+| Gear Fourth: **Snakeman** | maestria 70 + Armamento Nv4 | mais rápido, dash no ar, socos **teleguiados** | Jet Culverin, Black Mamba, King Cobra |
+| **Gear Fifth** | maestria 100 | branco radiante, tambores da libertação, 5 pulos no ar; tudo que é atingido **vira borracha e quica**, o terreno balança em vez de quebrar. Deixa o corpo exausto | Dawn Gun, Dawn Whip, Dawn Rocket, Bajrang Gun |
+| Fênix **Híbrida** | maestria 15 | asas de chama azul, plana ao cair, bate as asas no ar | — |
+| Fênix **Completa** | maestria 30 | modelo de fênix próprio, **voo real**, hitbox menor | — |
+
+**Tori Tori no Mi, Modelo Fênix** (Zoan mítica): Garra da Fênix, Onda de Chama Azul, Chamas da Regeneração (cura você e aliados) e Marca da Fênix (mergulho do alto). Passivo: as chamas regeneram a maior parte do dano recebido pagando energia, **exceto dano de quem usa Busoshoku**.
 
 ## Primeira pessoa e menu
 - **Primeira pessoa:** com a mão vazia e o modo de combate (ou um poder) ativo, os dois braços aparecem e seguem as mesmas animações do corpo: guarda, jabs alternados, gancho, bloqueio cruzado, cargas, Bazooka, Gigant inflado e Haki. A pausa de impacto e as transições funcionam igual. Os revestimentos de Haki e do Gear Second também aparecem nos braços. Segurando um item, o jogo usa a renderização vanilla.

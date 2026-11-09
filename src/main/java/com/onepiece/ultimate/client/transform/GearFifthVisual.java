@@ -13,13 +13,15 @@ import net.minecraft.util.Mth;
 
 /** Gear Fifth: everything turns radiant white – hair, clothes, skin – with cloud-like steam swirling around the shoulders. */
 final class GearFifthVisual implements TransformationVisual {
+    /** Paint with a solid white texture: tinting the skin texture white would just reproduce the skin's colours. */
+    private static final net.minecraft.resources.ResourceLocation WHITE = com.onepiece.ultimate.OnePieceMod.id("textures/particle/white.png");
     @Override
     public void renderLayer(PoseStack ps, MultiBufferSource buffers, int light, AbstractClientPlayer player,
                             PlayerModel<AbstractClientPlayer> model, float partial, float age) {
-        model.renderToBuffer(ps, buffers.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation())), light,
-                OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 0.8f);
-        float glow = 0.35f + 0.1f * Mth.sin(age * 0.25f);
-        model.renderToBuffer(ps, buffers.getBuffer(RenderType.entityTranslucentEmissive(player.getSkinTextureLocation())), light,
+        model.renderToBuffer(ps, buffers.getBuffer(RenderType.entityTranslucent(WHITE)), light,
+                OverlayTexture.NO_OVERLAY, 0.97f, 0.97f, 0.99f, 0.82f);
+        float glow = 0.25f + 0.1f * Mth.sin(age * 0.25f);
+        model.renderToBuffer(ps, buffers.getBuffer(RenderType.entityTranslucentEmissive(WHITE)), light,
                 OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, glow);
     }
 
@@ -27,8 +29,8 @@ final class GearFifthVisual implements TransformationVisual {
     public void renderFirstPersonArm(PoseStack ps, MultiBufferSource buffers, int light, AbstractClientPlayer player,
                                      ModelPart arm, ModelPart sleeve, boolean right, float partial) {
         if (!arm.visible) return;
-        arm.render(ps, buffers.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation())), light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 0.8f);
-        sleeve.render(ps, buffers.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation())), light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 0.8f);
+        arm.render(ps, buffers.getBuffer(RenderType.entityTranslucent(WHITE)), light, OverlayTexture.NO_OVERLAY, 0.97f, 0.97f, 0.99f, 0.82f);
+        sleeve.render(ps, buffers.getBuffer(RenderType.entityTranslucent(WHITE)), light, OverlayTexture.NO_OVERLAY, 0.97f, 0.97f, 0.99f, 0.82f);
     }
 
     @Override

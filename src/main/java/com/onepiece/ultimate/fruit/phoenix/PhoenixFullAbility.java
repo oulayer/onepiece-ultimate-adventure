@@ -53,11 +53,11 @@ public final class PhoenixFullAbility extends TransformationAbility {
 
     @Override
     protected void tickActivation(AbilityContext ctx, int ticks) {
-        PhoenixFx.body(ctx.level(), ctx.player(), 10);
+        if (ticks % 2 == 0) PhoenixFx.body(ctx.level(), ctx.player(), 4);
         if (ticks == activationTicks()) {
             ServerPlayer p = ctx.player();
             ctx.level().sendParticles(RingParticleOptions.ground(0x6AE0FF, 5f, 18), p.getX(), p.getY() + 0.1, p.getZ(), 1, 0, 0, 0, 0);
-            PhoenixFx.flames(ctx.level(), p.position().add(0, 0.8, 0), 60, 1.2);
+            PhoenixFx.flames(ctx.level(), p.position().add(0, 0.8, 0), 30, 1.5);
             ServerFx.sound(ctx.level(), p.position(), ModSounds.PHOENIX_CRY.get(), 1.6f, 0.9f);
             ServerFx.camera(p, CameraEffectPacket.Type.FOV_PUNCH, 0.2f, 14);
         }
@@ -65,7 +65,7 @@ public final class PhoenixFullAbility extends TransformationAbility {
 
     @Override
     protected void tickActive(AbilityContext ctx, int ticks) {
-        if (ticks % 3 == 0) PhoenixFx.body(ctx.level(), ctx.player(), 2);
+        if (ticks % 5 == 0) PhoenixFx.body(ctx.level(), ctx.player(), 1);
         if (ticks % 200 == 0) ctx.awardMastery(2);
     }
 }

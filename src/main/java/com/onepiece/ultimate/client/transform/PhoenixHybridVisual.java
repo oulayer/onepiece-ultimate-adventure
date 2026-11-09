@@ -16,18 +16,20 @@ final class PhoenixHybridVisual implements TransformationVisual {
     @Override
     public void renderLayer(PoseStack ps, MultiBufferSource buffers, int light, AbstractClientPlayer player,
                             PlayerModel<AbstractClientPlayer> model, float partial, float age) {
-        wing(ps, buffers, model.rightArm, age);
-        wing(ps, buffers, model.leftArm, age);
+        boolean spread = !player.onGround() && !player.isInWater();
+        wing(ps, buffers, model.rightArm, age, spread);
+        wing(ps, buffers, model.leftArm, age, spread);
         var talons = buffers.getBuffer(RenderType.entityTranslucent(player.getSkinTextureLocation()));
         model.rightLeg.render(ps, talons, light, OverlayTexture.NO_OVERLAY, 1f, 0.8f, 0.25f, 0.55f);
         model.leftLeg.render(ps, talons, light, OverlayTexture.NO_OVERLAY, 1f, 0.8f, 0.25f, 0.55f);
     }
 
-    static void wing(PoseStack ps, MultiBufferSource buffers, ModelPart arm, float age) {
+    static void wing(PoseStack ps, MultiBufferSource buffers, ModelPart arm, float age, boolean spread) {
         if (!arm.visible) return;
         ModelPart wing = PhoenixModels.wing();
         ps.pushPose();
         arm.translateAndRotate(ps);
+        if (!spread) ps.scale(1f, 0.85f, 0.32f); // folded along the arm on the ground
         wing.render(ps, buffers.getBuffer(RenderType.entityTranslucentEmissive(PhoenixModels.TEXTURE)), 0xF000F0, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 0.85f);
         wing.render(ps, buffers.getBuffer(RenderType.energySwirl(ArmamentVisuals.FLAME, (age * 0.02f) % 1f, (age * 0.05f) % 1f)), 0xF000F0,
                 OverlayTexture.NO_OVERLAY, 0.1f, 0.45f, 0.9f, 1f);
@@ -37,7 +39,7 @@ final class PhoenixHybridVisual implements TransformationVisual {
     @Override
     public void renderFirstPersonArm(PoseStack ps, MultiBufferSource buffers, int light, AbstractClientPlayer player,
                                      ModelPart arm, ModelPart sleeve, boolean right, float partial) {
-        wing(ps, buffers, arm, player.tickCount + partial);
+        wing(ps, buffers, arm, player.tickCount + partial, !player.onGround());
     }
 
     @Override
