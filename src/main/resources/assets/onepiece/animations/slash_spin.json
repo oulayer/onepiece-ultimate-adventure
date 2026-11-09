@@ -74,6 +74,116 @@
      "step"
     ]
    ]
+  },
+  "fp_right": {
+   "rotation": [
+    [
+     0,
+     -5,
+     -10,
+     0,
+     "in_out_quad"
+    ],
+    [
+     2,
+     0,
+     40,
+     0,
+     "in_out_quad"
+    ],
+    [
+     7,
+     0,
+     -50,
+     0,
+     "out_cubic"
+    ],
+    [
+     10,
+     0,
+     -50,
+     0,
+     "in_out_quad"
+    ],
+    [
+     17,
+     -5,
+     -10,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     -1,
+     2,
+     0,
+     "in_out_quad"
+    ],
+    [
+     2,
+     4,
+     3,
+     0,
+     "in_out_quad"
+    ],
+    [
+     7,
+     -6,
+     2,
+     3,
+     "out_cubic"
+    ],
+    [
+     10,
+     -6,
+     2,
+     3,
+     "in_out_quad"
+    ],
+    [
+     17,
+     -1,
+     2,
+     0,
+     "in_out_quad"
+    ]
+   ]
+  },
+  "fp_left": {
+   "rotation": [
+    [
+     0,
+     0,
+     10,
+     0,
+     "in_out_quad"
+    ],
+    [
+     17,
+     0,
+     10,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     1,
+     -2,
+     -2,
+     "in_out_quad"
+    ],
+    [
+     17,
+     1,
+     -2,
+     -2,
+     "in_out_quad"
+    ]
+   ]
   }
  }
 }

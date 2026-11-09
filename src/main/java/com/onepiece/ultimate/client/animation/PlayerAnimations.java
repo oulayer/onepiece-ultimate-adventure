@@ -100,6 +100,7 @@ public final class PlayerAnimations {
             POSE.write(Bone.LEFT_ARM, model.leftArm);
             POSE.write(Bone.RIGHT_LEG, model.rightLeg);
             POSE.write(Bone.LEFT_LEG, model.leftLeg);
+            reattachArms(model);
         }
         if (animate && player instanceof net.minecraft.client.player.AbstractClientPlayer acp) {
             var visual = com.onepiece.ultimate.client.transform.TransformationVisuals.of(player);
@@ -108,6 +109,20 @@ public final class PlayerAnimations {
         long now = player.level().getGameTime();
         model.rightArm.visible = !FistVisibility.rightHidden(player.getId(), now);
         model.leftArm.visible = !FistVisibility.leftHidden(player.getId(), now);
+    }
+
+    /**
+     * Keeps the shoulders on the torso when an animation twists the body: vanilla only moves the arm pivots during
+     * its own swing, so without this the arms detach from a rotated chest. Arm directions are left as authored.
+     */
+    static void reattachArms(PlayerModel<?> model) {
+        float yaw = model.body.yRot;
+        if (Math.abs(yaw) < 1e-3f) return;
+        float sin = net.minecraft.util.Mth.sin(yaw), cos = net.minecraft.util.Mth.cos(yaw);
+        model.rightArm.z = sin * 5f;
+        model.rightArm.x = -cos * 5f;
+        model.leftArm.z = -sin * 5f;
+        model.leftArm.x = cos * 5f;
     }
 
     /** Whole-body transform (lean, spin, squash), applied in RenderPlayerEvent.Pre. Returns true if pushed. */

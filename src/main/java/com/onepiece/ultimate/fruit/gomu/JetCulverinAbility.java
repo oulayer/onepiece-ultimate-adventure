@@ -40,7 +40,7 @@ public final class JetCulverinAbility extends Ability {
         Vec3 dir = ctx.look();
         if (target != null) dir = dir.add(target.getBoundingBox().getCenter().subtract(p.getEyePosition()).normalize().scale(0.3)).normalize();
         level.addFreshEntity(StretchFistEntity.create(level, p, ctx.shoulder(1), dir.add(0, 0.25, 0), 1)
-                .speed(4.5).range(30).homing(target, 0.28).style(StretchFistEntity.Style.JET)
+                .speed(4.5).range(30).homing(target, 0.28).serpentine(0.6, 0.8, 0).style(StretchFistEntity.Style.JET)
                 .onHitEntity(GomuFx.fistHit(ctx, ctx.look(), 18f, 2f, 0.3f, 16, 1.6f, 2f, 0xFF5070, 3, false))
                 .onTravel(pos -> level.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.8f, 0.1f, 0.2f), 1.2f),
                         pos.x, pos.y + 0.3, pos.z, 2, 0.1, 0.1, 0.1, 0))

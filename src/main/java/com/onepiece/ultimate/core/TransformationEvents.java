@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.Mod;
 /** Hitbox of transformed players (both sides – clients refresh when the visual state arrives). */
 @Mod.EventBusSubscriber(modid = OnePieceMod.MOD_ID)
 public final class TransformationEvents {
+    public static final float GIANT_SCALE = 2.6f;
 
     @SubscribeEvent
     public static void size(EntityEvent.Size event) {
@@ -24,6 +25,7 @@ public final class TransformationEvents {
         TransformationAbility form = TransformationAbility.active(data);
         if (form == null) return;
         EntityDimensions dims = form.dimensions();
+        if (data.giant()) dims = (dims != null ? dims : EntityDimensions.scalable(0.6f, 1.8f)).scale(GIANT_SCALE);
         if (dims == null) return;
         if (event.getPose() == Pose.CROUCHING) dims = dims.scale(1f, 0.85f);
         event.setNewSize(dims, false);

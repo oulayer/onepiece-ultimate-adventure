@@ -114,7 +114,7 @@ public final class HakiManager {
 
     /** Extra melee reach while Conqueror's infusion is active (hits land a breath before contact). */
     public static float reachBonus(OPPlayerData data) {
-        return data.isToggleActive(HakiAbilities.CONQUEROR_INFUSION.id()) ? 0.8f : 0f;
+        return (data.isToggleActive(HakiAbilities.CONQUEROR_INFUSION.id()) ? 0.8f : 0f) + (data.giant() ? 3f : 0f);
     }
 
     /** Called for every hit a player lands (vanilla attacks, combos, fruit abilities). */

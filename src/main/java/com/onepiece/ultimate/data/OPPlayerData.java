@@ -51,6 +51,7 @@ public final class OPPlayerData {
     private boolean seaWeakened;
     private int comboHits;
     private boolean futureSight;
+    private boolean giant;
     /** Armament level of this player as seen by other clients (coverage of the coating). */
     private int visualArmamentLevel;
 
@@ -198,6 +199,18 @@ public final class OPPlayerData {
             return true;
         }
         return consumeEnergy(amount);
+    }
+
+    /** Gear Fifth "Gigant": the body is temporarily colossal (hitbox and model). */
+    public boolean giant() {
+        return giant;
+    }
+
+    public void setGiant(boolean on) {
+        if (giant != on) {
+            giant = on;
+            markVisual();
+        }
     }
 
     public boolean futureSight() {
@@ -360,6 +373,7 @@ public final class OPPlayerData {
         t.putBoolean("weak", seaWeakened);
         if (channeling != null) t.putString("channel", channeling.toString());
         t.putBoolean("futureSight", futureSight);
+        t.putBoolean("giant", giant);
         t.putByte("buso", (byte) haki.level(HakiType.ARMAMENT));
         return t;
     }
@@ -376,6 +390,7 @@ public final class OPPlayerData {
         seaWeakened = t.getBoolean("weak");
         channeling = t.contains("channel") ? ResourceLocation.tryParse(t.getString("channel")) : null;
         futureSight = t.getBoolean("futureSight");
+        giant = t.getBoolean("giant");
         visualArmamentLevel = t.getByte("buso");
     }
 

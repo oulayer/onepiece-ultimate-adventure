@@ -49,6 +49,9 @@ public class StretchFistEntity extends Projectile {
     @Nullable private Consumer<Vec3> onTravel;
     @Nullable private LivingEntity homingTarget;
     private double turnRate;
+    private double wobbleAmp, wobbleFreq, wobblePhase;
+    private float growFrom = -1, growTo;
+    private int growTicks;
 
     public StretchFistEntity(EntityType<? extends StretchFistEntity> type, Level level) {
         super(type, level);
@@ -77,6 +80,12 @@ public class StretchFistEntity extends Projectile {
     public StretchFistEntity onTravel(Consumer<Vec3> c) { this.onTravel = c; return this; }
     /** The fist bends toward {@code target} each tick (0..1 = how sharply it can turn). */
     public StretchFistEntity homing(@Nullable LivingEntity target, double turnRate) { this.homingTarget = target; this.turnRate = turnRate; return this; }
+    /** Snake-like path: sideways oscillation of {@code amplitude} blocks around the heading. */
+    public StretchFistEntity serpentine(double amplitude, double frequency, double phase) {
+        this.wobbleAmp = amplitude; this.wobbleFreq = frequency; this.wobblePhase = phase; return this;
+    }
+    /** The fist swells from its current scale to {@code to} over {@code ticks} while flying. */
+    public StretchFistEntity grow(float to, int ticks) { this.growFrom = fistScale(); this.growTo = to; this.growTicks = Math.max(1, ticks); return this; }
 
     @Override
     protected void defineSynchedData() {
@@ -166,7 +175,8 @@ public class StretchFistEntity extends Projectile {
 
         // ---- blocks
         BlockHitResult blockHit = level().clip(new ClipContext(center, next, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this));
-        Vec3 end = blockHit.getType() == HitResult.Type.BLOCK ? blockHit.getLocation() : next;
+        boolean bores = boreThroughBlocks && onHitBlock != null && center.distanceTo(shoulder) < maxRange;
+        Vec3 end = blockHit.getType() == HitResult.Type.BLOCK && !bores ? blockHit.getLocation() : next;
 
         // ---- entities along the swept segment
         for (LivingEntity target : HitDetector.sweep(level(), center, end, radius, owner)) {
@@ -191,7 +201,18 @@ public class StretchFistEntity extends Projectile {
             }
         }
 
-        setPos(getX() + vel.x, getY() + vel.y, getZ() + vel.z);
+        Vec3 step = vel;
+        if (wobbleAmp > 0) {
+            Vec3 h = new Vec3(vel.x, 0, vel.z);
+            Vec3 side = h.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : new Vec3(-h.z, 0, h.x).normalize();
+            double now = Math.sin(ticks * wobbleFreq + wobblePhase), prev = Math.sin((ticks - 1) * wobbleFreq + wobblePhase);
+            double up = Math.cos(ticks * wobbleFreq * 0.7 + wobblePhase) - Math.cos((ticks - 1) * wobbleFreq * 0.7 + wobblePhase);
+            step = step.add(side.scale((now - prev) * wobbleAmp)).add(0, up * wobbleAmp * 0.4, 0);
+        }
+        if (growFrom > 0 && ticks <= growTicks) {
+            entityData.set(SCALE, growFrom + (growTo - growFrom) * ticks / (float) growTicks);
+        }
+        setPos(getX() + step.x, getY() + step.y, getZ() + step.z);
         if (onTravel != null) onTravel.accept(position());
         if (position().distanceTo(shoulder) >= maxRange) startReturning();
     }

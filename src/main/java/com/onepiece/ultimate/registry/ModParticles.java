@@ -21,6 +21,8 @@ public final class ModParticles {
      * spawn with count 0 so the vector arrives exactly.
      */
     public static final RegistryObject<SimpleParticleType> BLACK_LIGHTNING = PARTICLES.register("black_lightning", () -> new SimpleParticleType(true));
+    /** Same bolt shape, white-gold core with a blue glow (Gear Fifth Kaminari). */
+    public static final RegistryObject<SimpleParticleType> WHITE_LIGHTNING = PARTICLES.register("white_lightning", () -> new SimpleParticleType(true));
     /** Expanding coloured ring: impact shock rings (facing a direction) and ground shockwaves (horizontal). */
     public static final RegistryObject<ParticleType<RingParticleOptions>> RING = PARTICLES.register("ring",
             () -> new ParticleType<>(true, RingParticleOptions.DESERIALIZER) {

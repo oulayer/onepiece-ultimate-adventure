@@ -43,8 +43,12 @@ public abstract class GearFourthAbility extends TransformationAbility {
     @Override
     protected void activate(AbilityContext ctx) {
         HakiManager.forceToggle(ctx.player(), ctx.data(), HakiAbilities.ARMAMENT);
-        ServerFx.animation(ctx.player(), "gear_fourth_activate");
+        ServerFx.animation(ctx.player(), activationAnimation());
         ServerFx.sound(ctx.level(), ctx.player().position(), ModSounds.GOMU_INFLATE.get(), 1.2f, 0.8f);
+    }
+
+    protected String activationAnimation() {
+        return "gear_fourth_activate";
     }
 
     @Override

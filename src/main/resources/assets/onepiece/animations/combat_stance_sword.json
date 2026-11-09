@@ -60,6 +60,88 @@
      0
     ]
    ]
+  },
+  "fp_right": {
+   "rotation": [
+    [
+     0,
+     -5,
+     -10,
+     0,
+     "in_out_quad"
+    ],
+    [
+     20,
+     -5,
+     -10,
+     0,
+     "in_out_quad"
+    ],
+    [
+     40,
+     -5,
+     -10,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     -1,
+     2,
+     0,
+     "in_out_quad"
+    ],
+    [
+     20,
+     -1,
+     2.3,
+     0,
+     "in_out_quad"
+    ],
+    [
+     40,
+     -1,
+     2,
+     0,
+     "in_out_quad"
+    ]
+   ]
+  },
+  "fp_left": {
+   "rotation": [
+    [
+     0,
+     0,
+     10,
+     0,
+     "in_out_quad"
+    ],
+    [
+     40,
+     0,
+     10,
+     0,
+     "in_out_quad"
+    ]
+   ],
+   "position": [
+    [
+     0,
+     1,
+     -2,
+     -2,
+     "in_out_quad"
+    ],
+    [
+     40,
+     1,
+     -2,
+     -2,
+     "in_out_quad"
+    ]
+   ]
   }
  }
 }

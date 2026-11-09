@@ -22,6 +22,8 @@ public final class AbilityRuntime {
     public int airJumps;
     /** Damage queued to be regenerated (Phoenix flames). */
     public float regenPool;
+    /** Game time when the Gear Fifth giant body shrinks back. */
+    public long giantUntil;
 
     /** Ticks each active toggle has been running. */
     public final Map<ResourceLocation, Integer> toggleTicks = new HashMap<>();

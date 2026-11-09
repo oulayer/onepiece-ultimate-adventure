@@ -57,7 +57,7 @@ public final class BajrangGunAbility extends Ability {
         ServerFx.shake(level, p.position(), 70, 1.5f, 30);
         level.addFreshEntity(StretchFistEntity.create(level, p, ctx.shoulder(1).add(dir.scale(3)), dir, 1)
                 .speed(2.4).range(42).scale(13f).pierce(999).bore().style(StretchFistEntity.Style.DAWN)
-                .onHitEntity(DawnGunAbility.toonHit(ctx, dir, 70f * (0.7f + 0.3f * c), 4.5f, 1.2f, 7f))
+                .onHitEntity(ToonFx.toonHit(ctx, dir, 70f * (0.7f + 0.3f * c), 4.5f, 1.2f, 7f))
                 .onHitBlock((hit, last) -> {
                     Vec3 at = hit.getLocation();
                     if (last) {

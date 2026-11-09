@@ -51,6 +51,7 @@ public final class ClientModEvents {
         event.registerSpriteSet(ModParticles.IMPACT_SPARK.get(), ImpactSparkParticle.Provider::new);
         event.registerSpriteSet(ModParticles.RING.get(), RingParticle.Provider::new);
         event.registerSpriteSet(ModParticles.BLACK_LIGHTNING.get(), com.onepiece.ultimate.client.particle.BlackLightningParticle.Provider::new);
+        event.registerSpriteSet(ModParticles.WHITE_LIGHTNING.get(), com.onepiece.ultimate.client.particle.BlackLightningParticle.WhiteProvider::new);
     }
 
     @SubscribeEvent

@@ -50,7 +50,8 @@ public final class BlackMambaAbility extends Ability {
         Vec3 sideways = new Vec3(-look.z, 0, look.x).scale(side * (0.6 + r.nextFloat() * 0.6));
         Vec3 dir = look.add(sideways).add(0, (r.nextFloat() - 0.3) * 0.6, 0).normalize();
         level.addFreshEntity(StretchFistEntity.create(level, p, ctx.shoulder(side), dir, side)
-                .speed(4.0).range(18).homing(target, 0.35).style(StretchFistEntity.Style.JET)
+                .speed(4.0).range(18).homing(target, 0.35).serpentine(0.7 + r.nextFloat() * 0.6, 0.9 + r.nextFloat() * 0.6, r.nextFloat() * 6.28)
+                .style(StretchFistEntity.Style.JET)
                 .onHitEntity(GomuFx.fistHit(ctx, look, 5.5f, 0.3f, 0.05f, 7, 0f, 0.8f, 0xFF5070, ticks % 5 == 0 ? 1 : 0, false)));
         if (ticks % 3 == 0) ServerFx.sound(level, p.position(), ModSounds.SWING_LIGHT.get(), 0.6f, 1.4f + r.nextFloat() * 0.3f);
     }

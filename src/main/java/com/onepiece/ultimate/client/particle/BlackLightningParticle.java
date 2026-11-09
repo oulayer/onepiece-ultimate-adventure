@@ -17,8 +17,9 @@ public class BlackLightningParticle extends TextureSheetParticle {
     private final Vec3 offset;
     private Vec3[] points;
     private final long seedBase;
+    private final boolean white;
 
-    protected BlackLightningParticle(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, SpriteSet sprites) {
+    protected BlackLightningParticle(ClientLevel level, double x, double y, double z, double dx, double dy, double dz, SpriteSet sprites, boolean white) {
         super(level, x, y, z);
         this.offset = new Vec3(dx, dy, dz);
         this.lifetime = 5 + random.nextInt(4);
@@ -26,6 +27,7 @@ public class BlackLightningParticle extends TextureSheetParticle {
         this.gravity = 0;
         this.xd = this.yd = this.zd = 0;
         this.seedBase = random.nextLong();
+        this.white = white;
         pickSprite(sprites);
         rebuild(0);
     }
@@ -62,7 +64,9 @@ public class BlackLightningParticle extends TextureSheetParticle {
         float u0 = getU0(), u1 = getU1(), v0 = getV0(), v1 = getV1();
         for (int pass = 0; pass < 2; pass++) {
             float w = pass == 0 ? 0.075f : 0.03f;
-            float r = pass == 0 ? 0.9f : 0.02f, g = pass == 0 ? 0.05f : 0f, b = pass == 0 ? 0.05f : 0.03f;
+            float r, g, b;
+            if (white) { r = pass == 0 ? 0.35f : 1f; g = pass == 0 ? 0.6f : 0.98f; b = pass == 0 ? 1f : 0.8f; }
+            else { r = pass == 0 ? 0.9f : 0.02f; g = pass == 0 ? 0.05f : 0f; b = pass == 0 ? 0.05f : 0.03f; }
             float a = (pass == 0 ? 0.45f : 0.95f) * fade * flicker;
             for (int i = 0; i < points.length - 1; i++) {
                 Vec3 pa = origin.add(points[i]), pb = origin.add(points[i + 1]);
@@ -104,7 +108,14 @@ public class BlackLightningParticle extends TextureSheetParticle {
     public record Provider(SpriteSet sprites) implements ParticleProvider<SimpleParticleType> {
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double dx, double dy, double dz) {
-            return new BlackLightningParticle(level, x, y, z, dx, dy, dz, sprites);
+            return new BlackLightningParticle(level, x, y, z, dx, dy, dz, sprites, false);
+        }
+    }
+
+    public record WhiteProvider(SpriteSet sprites) implements ParticleProvider<SimpleParticleType> {
+        @Override
+        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double dx, double dy, double dz) {
+            return new BlackLightningParticle(level, x, y, z, dx, dy, dz, sprites, true);
         }
     }
 }

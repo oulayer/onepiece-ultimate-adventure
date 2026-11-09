@@ -30,9 +30,38 @@ public final class GearFifthAbility extends TransformationAbility {
         modifier(Attributes.MOVEMENT_SPEED, "9e6d50c1-7f81-42a3-cedf-4a5b6c7d8e95", 0.3, AttributeModifier.Operation.MULTIPLY_TOTAL);
     }
 
+    private static final java.util.UUID GIANT_STEP = java.util.UUID.fromString("b0f1e2d3-4c5b-4a69-8e7f-6a5b4c3d2e1f");
+    private static final java.util.UUID GIANT_REACH = java.util.UUID.fromString("c1a2b3d4-5e6f-4789-9a0b-1c2d3e4f5a6b");
+    private static final java.util.UUID GIANT_ENTITY_REACH = java.util.UUID.fromString("d2b3c4e5-6f70-4891-ab1c-2d3e4f5a6b7c");
+
     @Override
     public float damageMultiplier(OPPlayerData data) {
-        return 1.6f;
+        return data.giant() ? 2.4f : 1.6f;
+    }
+
+    /** Giant body: step over walls and reach further (removed again when it shrinks). */
+    static void applyGiantModifiers(ServerPlayer p, boolean on) {
+        var step = p.getAttribute(net.minecraftforge.common.ForgeMod.STEP_HEIGHT_ADDITION.get());
+        var reach = p.getAttribute(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get());
+        var entityReach = p.getAttribute(net.minecraftforge.common.ForgeMod.ENTITY_REACH.get());
+        if (on) {
+            com.onepiece.ultimate.progression.ProgressionManager.setModifier(step, GIANT_STEP, "gigant", 1.5, AttributeModifier.Operation.ADDITION);
+            com.onepiece.ultimate.progression.ProgressionManager.setModifier(reach, GIANT_REACH, "gigant", 3, AttributeModifier.Operation.ADDITION);
+            com.onepiece.ultimate.progression.ProgressionManager.setModifier(entityReach, GIANT_ENTITY_REACH, "gigant", 3, AttributeModifier.Operation.ADDITION);
+        } else {
+            if (step != null) step.removeModifier(GIANT_STEP);
+            if (reach != null) reach.removeModifier(GIANT_REACH);
+            if (entityReach != null) entityReach.removeModifier(GIANT_ENTITY_REACH);
+        }
+    }
+
+    static void shrink(ServerPlayer p, OPPlayerData d) {
+        if (!d.giant()) return;
+        d.setGiant(false);
+        applyGiantModifiers(p, false);
+        p.refreshDimensions();
+        p.serverLevel().sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD, p.getX(), p.getY() + 1, p.getZ(), 40, 1, 1, 1, 0.05);
+        ServerFx.sound(p.serverLevel(), p.position(), ModSounds.GOMU_SNAP.get(), 1.2f, 0.5f);
     }
 
     @Override
@@ -72,7 +101,17 @@ public final class GearFifthAbility extends TransformationAbility {
     @Override
     protected void tickActive(AbilityContext ctx, int ticks) {
         ServerPlayer p = ctx.player();
-        if (p.onGround()) ctx.data().abilities.airJumps = 0;
+        OPPlayerData data = ctx.data();
+        if (p.onGround()) data.abilities.airJumps = 0;
+        if (data.giant()) {
+            if (ctx.now() >= data.abilities.giantUntil) shrink(p, data);
+            else if (ticks % 10 == 0 && p.onGround() && p.getDeltaMovement().horizontalDistanceSqr() > 0.01) {
+                // the ground shakes under every giant footstep
+                com.onepiece.ultimate.destruction.DestructionManager.shockwave(ctx.level(), p.position(), 3.5f, 4, 3f, 0.5f, 0.6f, p);
+                ServerFx.shake(ctx.level(), p.position(), 20, 0.4f, 6);
+                ServerFx.sound(ctx.level(), p.position(), ModSounds.SLAM.get(), 0.8f, 1.2f);
+            }
+        }
         if (ticks % 40 == 0) {
             ServerFx.sound(ctx.level(), p.position(), ModSounds.GOMU_GEAR_FIFTH.get(), 0.6f, 1f);
             p.addEffect(new MobEffectInstance(MobEffects.JUMP, 60, 2, false, false, false));
@@ -99,6 +138,7 @@ public final class GearFifthAbility extends TransformationAbility {
     @Override
     protected void deactivate(AbilityContext ctx, boolean interrupted) {
         ServerPlayer p = ctx.player();
+        shrink(p, ctx.data());
         p.removeEffect(MobEffects.JUMP);
         p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 800, 2, false, true, true));
         p.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 800, 2, false, true, true));

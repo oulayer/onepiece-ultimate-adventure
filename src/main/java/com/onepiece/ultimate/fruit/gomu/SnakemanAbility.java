@@ -24,6 +24,11 @@ public final class SnakemanAbility extends GearFourthAbility {
     }
 
     @Override
+    protected String activationAnimation() {
+        return "snakeman_activate";
+    }
+
+    @Override
     public float damageMultiplier(OPPlayerData data) {
         return 1.5f;
     }

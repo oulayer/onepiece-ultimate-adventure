@@ -40,9 +40,12 @@ public final class FirstPersonArms {
     public static void onRenderHand(RenderHandEvent event) {
         Minecraft mc = Minecraft.getInstance();
         var player = mc.player;
-        if (player == null || player.isSpectator() || player.isInvisible() || !player.getMainHandItem().isEmpty()) return;
+        if (player == null || player.isSpectator() || player.isInvisible()) return;
         OPPlayerData data = OPCapabilities.getOrNull(player);
         if (data == null) return;
+        var held = player.getMainHandItem();
+        boolean blade = data.combatMode() && com.onepiece.ultimate.combat.CombatManager.isBlade(held);
+        if (!held.isEmpty() && !blade) return; // other items keep vanilla first-person rendering
         var visual = com.onepiece.ultimate.client.transform.TransformationVisuals.of(player);
         if (visual != null && visual.hidesFirstPersonArms()) {
             event.setCanceled(true);
@@ -52,6 +55,7 @@ public final class FirstPersonArms {
         boolean animated = c != null && c.hasFirstPerson();
         boolean powers = data.isToggleActive(HakiAbilities.ARMAMENT.id()) || visual != null;
         if (!data.combatMode() && !animated && !powers) return;
+        if (!player.getOffhandItem().isEmpty()) return; // shields, torches… keep vanilla handling
 
         event.setCanceled(true);
         if (event.getHand() != InteractionHand.MAIN_HAND) return;
@@ -98,6 +102,19 @@ public final class FirstPersonArms {
         ModelPart arm = right ? m.rightArm : m.leftArm;
         ModelPart sleeve = right ? m.rightSleeve : m.leftSleeve;
         if (data.isToggleActive(HakiAbilities.ARMAMENT.id())) ArmamentVisuals.render(ps, buffers, light, player, partial, arm, sleeve);
+        var stack = right ? player.getMainHandItem() : player.getOffhandItem();
+        if (!stack.isEmpty() && arm.visible) {
+            // same attachment as the third-person item layer: hand pivot, then the held-item offset
+            ps.pushPose();
+            arm.translateAndRotate(ps);
+            ps.mulPose(Axis.XP.rotationDegrees(-90f));
+            ps.mulPose(Axis.YP.rotationDegrees(180f));
+            ps.translate((right ? 1 : -1) / 16f, 0.125f, -0.625f);
+            Minecraft.getInstance().getEntityRenderDispatcher().getItemInHandRenderer().renderItem(player, stack,
+                    right ? net.minecraft.world.item.ItemDisplayContext.THIRD_PERSON_RIGHT_HAND : net.minecraft.world.item.ItemDisplayContext.THIRD_PERSON_LEFT_HAND,
+                    !right, ps, buffers, light);
+            ps.popPose();
+        }
         if (visual != null) visual.renderFirstPersonArm(ps, buffers, light, player, arm, sleeve, right, partial);
         ps.popPose();
     }

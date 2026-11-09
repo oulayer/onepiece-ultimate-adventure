@@ -26,26 +26,33 @@ public final class GomuAbilities {
     public static final KongOrganAbility KONG_ORGAN = AbilityRegistry.register(new KongOrganAbility());
     public static final LeoBazookaAbility LEO_BAZOOKA = AbilityRegistry.register(new LeoBazookaAbility());
     public static final KingKongGunAbility KING_KONG_GUN = AbilityRegistry.register(new KingKongGunAbility());
+    public static final RhinoSchneiderAbility RHINO_SCHNEIDER = AbilityRegistry.register(new RhinoSchneiderAbility());
+    public static final CulverinAbility CULVERIN = AbilityRegistry.register(new CulverinAbility());
     public static final BoundmanAbility BOUNDMAN = AbilityRegistry.register(new BoundmanAbility());
 
     // ---- Gear Fourth: Snakeman
     public static final JetCulverinAbility JET_CULVERIN = AbilityRegistry.register(new JetCulverinAbility());
     public static final BlackMambaAbility BLACK_MAMBA = AbilityRegistry.register(new BlackMambaAbility());
     public static final KingCobraAbility KING_COBRA = AbilityRegistry.register(new KingCobraAbility());
+    public static final HydraAbility HYDRA = AbilityRegistry.register(new HydraAbility());
     public static final SnakemanAbility SNAKEMAN = AbilityRegistry.register(new SnakemanAbility());
 
     // ---- Gear Fifth
-    public static final DawnGunAbility DAWN_GUN = AbilityRegistry.register(new DawnGunAbility());
-    public static final DawnWhipAbility DAWN_WHIP = AbilityRegistry.register(new DawnWhipAbility());
+    public static final MoguraPistolAbility MOGURA_PISTOL = AbilityRegistry.register(new MoguraPistolAbility());
+    public static final GigantAbility GIGANT = AbilityRegistry.register(new GigantAbility());
+    public static final DawnGatlingAbility DAWN_GATLING = AbilityRegistry.register(new DawnGatlingAbility());
+    public static final KaminariAbility KAMINARI = AbilityRegistry.register(new KaminariAbility());
     public static final DawnRocketAbility DAWN_ROCKET = AbilityRegistry.register(new DawnRocketAbility());
     public static final BajrangGunAbility BAJRANG_GUN = AbilityRegistry.register(new BajrangGunAbility());
     public static final GearFifthAbility GEAR_FIFTH = AbilityRegistry.register(new GearFifthAbility());
 
     static {
         GEAR_SECOND.variant(PISTOL, JET_PISTOL).variant(GATLING, JET_GATLING).variant(BAZOOKA, JET_BAZOOKA);
-        BOUNDMAN.variant(PISTOL, KONG_GUN).variant(GATLING, KONG_ORGAN).variant(BAZOOKA, LEO_BAZOOKA).variant(GIGANT_PISTOL, KING_KONG_GUN);
-        SNAKEMAN.variant(PISTOL, JET_CULVERIN).variant(GATLING, BLACK_MAMBA).variant(BAZOOKA, KING_COBRA);
-        GEAR_FIFTH.variant(PISTOL, DAWN_GUN).variant(WHIP, DAWN_WHIP).variant(ROCKET, DAWN_ROCKET).variant(GIGANT_PISTOL, BAJRANG_GUN);
+        BOUNDMAN.variant(PISTOL, KONG_GUN).variant(WHIP, CULVERIN).variant(GATLING, KONG_ORGAN).variant(ROCKET, RHINO_SCHNEIDER)
+                .variant(BAZOOKA, LEO_BAZOOKA).variant(GIGANT_PISTOL, KING_KONG_GUN);
+        SNAKEMAN.variant(PISTOL, JET_CULVERIN).variant(WHIP, HYDRA).variant(GATLING, BLACK_MAMBA).variant(BAZOOKA, KING_COBRA);
+        GEAR_FIFTH.variant(PISTOL, MOGURA_PISTOL).variant(WHIP, GIGANT).variant(GATLING, DAWN_GATLING).variant(ROCKET, DAWN_ROCKET)
+                .variant(BAZOOKA, KAMINARI).variant(GIGANT_PISTOL, BAJRANG_GUN);
     }
 
     /** Forces class initialisation (registration) at a controlled moment. */

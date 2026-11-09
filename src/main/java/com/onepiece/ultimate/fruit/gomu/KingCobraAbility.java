@@ -45,7 +45,7 @@ public final class KingCobraAbility extends Ability {
         LivingEntity target = GomuFx.bestTarget(ctx, 32, 45);
         Vec3 dir = ctx.look().add(0, 0.2, 0).normalize();
         level.addFreshEntity(StretchFistEntity.create(level, p, ctx.shoulder(1), dir, 1)
-                .speed(3.5).range(32).scale(3.5f).homing(target, 0.2).style(StretchFistEntity.Style.GIGANT)
+                .speed(3.5).range(32).scale(3.0f).grow(6.5f, 6).homing(target, 0.2).serpentine(1.2, 0.45, 0).style(StretchFistEntity.Style.GIGANT)
                 .onHitEntity(GomuFx.fistHit(ctx, ctx.look(), (22f + 14f * c), 2.8f, 0.6f, 30, 2.6f, 3.2f, 0xFF5070, 5, true))
                 .onHitBlock((hit, last) -> {
                     DestructionManager.crater(level, hit.getLocation(), 3f, 0.9f, 3.5f, p);

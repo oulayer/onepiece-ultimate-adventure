@@ -553,8 +553,8 @@ public final class OPGameTests {
         Husk target = target(h, 4.5, 2, 11.5);
         check(h, AbilityManager.press(p, d, FORMS, 3) == AbilityManager.Result.SUCCESS, "Gear Fifth");
         skipActivation(d);
-        check(h, AbilityManager.abilityInSlot(d, 0) == GomuAbilities.DAWN_GUN, "Pistol must become Dawn Gun");
-        check(h, AbilityManager.press(p, d, 0) == AbilityManager.Result.SUCCESS, "Dawn Gun refused");
+        check(h, AbilityManager.abilityInSlot(d, 0) == GomuAbilities.MOGURA_PISTOL, "Pistol must become Mogura Pistol");
+        check(h, AbilityManager.press(p, d, 0) == AbilityManager.Result.SUCCESS, "Mogura Pistol refused");
         h.onEachTick(() -> PlayerTicker.tick(p, d));
         h.succeedWhen(() -> check(h, com.onepiece.ultimate.combat.ToonPhysics.isRubber(target), "the target was not turned to rubber"));
     }
