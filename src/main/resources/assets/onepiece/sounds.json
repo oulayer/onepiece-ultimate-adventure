@@ -1,0 +1,194 @@
+{
+  "combat.swing_light": {
+    "subtitle": "subtitles.onepiece.combat.swing_light",
+    "sounds": [
+      {
+        "name": "onepiece:combat/swing_light"
+      }
+    ]
+  },
+  "combat.swing_heavy": {
+    "subtitle": "subtitles.onepiece.combat.swing_heavy",
+    "sounds": [
+      {
+        "name": "onepiece:combat/swing_heavy"
+      }
+    ]
+  },
+  "combat.hit_light": {
+    "subtitle": "subtitles.onepiece.combat.hit_light",
+    "sounds": [
+      {
+        "name": "onepiece:combat/hit_light"
+      }
+    ]
+  },
+  "combat.hit_heavy": {
+    "subtitle": "subtitles.onepiece.combat.hit_heavy",
+    "sounds": [
+      {
+        "name": "onepiece:combat/hit_heavy"
+      }
+    ]
+  },
+  "combat.block": {
+    "subtitle": "subtitles.onepiece.combat.block",
+    "sounds": [
+      {
+        "name": "onepiece:combat/block"
+      }
+    ]
+  },
+  "combat.parry": {
+    "subtitle": "subtitles.onepiece.combat.parry",
+    "sounds": [
+      {
+        "name": "onepiece:combat/parry"
+      }
+    ]
+  },
+  "combat.dash": {
+    "subtitle": "subtitles.onepiece.combat.dash",
+    "sounds": [
+      {
+        "name": "onepiece:combat/dash"
+      }
+    ]
+  },
+  "combat.slam": {
+    "subtitle": "subtitles.onepiece.combat.slam",
+    "sounds": [
+      {
+        "name": "onepiece:combat/slam"
+      }
+    ]
+  },
+  "combat.charge": {
+    "subtitle": "subtitles.onepiece.combat.charge",
+    "sounds": [
+      {
+        "name": "onepiece:combat/charge"
+      }
+    ]
+  },
+  "gomu.stretch": {
+    "subtitle": "subtitles.onepiece.gomu.stretch",
+    "sounds": [
+      {
+        "name": "onepiece:gomu/stretch"
+      }
+    ]
+  },
+  "gomu.snap": {
+    "subtitle": "subtitles.onepiece.gomu.snap",
+    "sounds": [
+      {
+        "name": "onepiece:gomu/snap"
+      }
+    ]
+  },
+  "gomu.inflate": {
+    "subtitle": "subtitles.onepiece.gomu.inflate",
+    "sounds": [
+      {
+        "name": "onepiece:gomu/inflate"
+      }
+    ]
+  },
+  "gomu.gear_second": {
+    "subtitle": "subtitles.onepiece.gomu.gear_second",
+    "sounds": [
+      {
+        "name": "onepiece:gomu/gear_second"
+      }
+    ]
+  },
+  "gomu.bounce": {
+    "subtitle": "subtitles.onepiece.gomu.bounce",
+    "sounds": [
+      {
+        "name": "onepiece:gomu/bounce"
+      }
+    ]
+  },
+  "destruction.rumble": {
+    "subtitle": "subtitles.onepiece.destruction.rumble",
+    "sounds": [
+      {
+        "name": "onepiece:destruction/rumble"
+      }
+    ]
+  },
+  "fruit.eat": {
+    "subtitle": "subtitles.onepiece.fruit.eat",
+    "sounds": [
+      {
+        "name": "onepiece:fruit/eat"
+      }
+    ]
+  },
+  "haki.awaken": {
+    "subtitle": "subtitles.onepiece.haki.awaken",
+    "sounds": [
+      {
+        "name": "onepiece:haki/awaken"
+      }
+    ]
+  },
+  "haki.armament": {
+    "subtitle": "subtitles.onepiece.haki.armament",
+    "sounds": [
+      {
+        "name": "onepiece:haki/armament"
+      }
+    ]
+  },
+  "haki.observation": {
+    "subtitle": "subtitles.onepiece.haki.observation",
+    "sounds": [
+      {
+        "name": "onepiece:haki/observation"
+      }
+    ]
+  },
+  "haki.dodge": {
+    "subtitle": "subtitles.onepiece.haki.dodge",
+    "sounds": [
+      {
+        "name": "onepiece:haki/dodge"
+      }
+    ]
+  },
+  "haki.emission": {
+    "subtitle": "subtitles.onepiece.haki.emission",
+    "sounds": [
+      {
+        "name": "onepiece:haki/emission"
+      }
+    ]
+  },
+  "haki.conqueror_charge": {
+    "subtitle": "subtitles.onepiece.haki.conqueror_charge",
+    "sounds": [
+      {
+        "name": "onepiece:haki/conqueror_charge"
+      }
+    ]
+  },
+  "haki.conqueror_wave": {
+    "subtitle": "subtitles.onepiece.haki.conqueror_wave",
+    "sounds": [
+      {
+        "name": "onepiece:haki/conqueror_wave"
+      }
+    ]
+  },
+  "haki.lightning": {
+    "subtitle": "subtitles.onepiece.haki.lightning",
+    "sounds": [
+      {
+        "name": "onepiece:haki/lightning"
+      }
+    ]
+  }
+}

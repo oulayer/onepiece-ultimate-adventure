@@ -1,0 +1,66 @@
+{
+ "length": 30,
+ "loop": false,
+ "hold": true,
+ "blend_in": 1,
+ "blend_out": 3,
+ "priority": 10,
+ "root_pivot": 0.9,
+ "bones": {
+  "right_arm": {
+   "rotation": [
+    [
+     0,
+     -175,
+     -15,
+     0
+    ],
+    [
+     30,
+     -175,
+     -15,
+     0
+    ]
+   ]
+  },
+  "left_arm": {
+   "rotation": [
+    [
+     0,
+     -175,
+     15,
+     0
+    ],
+    [
+     30,
+     -175,
+     15,
+     0
+    ]
+   ]
+  },
+  "root": {
+   "rotation": [
+    [
+     0,
+     0,
+     0,
+     0
+    ],
+    [
+     4,
+     35,
+     0,
+     0,
+     "out_cubic"
+    ],
+    [
+     30,
+     35,
+     0,
+     0
+    ]
+   ]
+  }
+ }
+}
