@@ -12,9 +12,14 @@ public interface TransformationVisual {
     /** Reshape the posed model (part scales/offsets) after animations ran. */
     default void applyModel(PlayerModel<?> model, AbstractClientPlayer player, float partial) {}
 
-    /** Uniform scale of the whole body. */
-    default float rootScale() {
+    /** Uniform scale of the whole body, applied about the feet. */
+    default float rootScale(AbstractClientPlayer player, float partial) {
         return 1f;
+    }
+
+    /** Extra third-person camera distance (blocks) so a big form never swallows the camera. */
+    default float cameraDistanceBonus(AbstractClientPlayer player, float partial) {
+        return 4f * Math.max(0f, rootScale(player, partial) - 1f);
     }
 
     /** Extra rendering on top of the model (tints, patterns, wings…). */

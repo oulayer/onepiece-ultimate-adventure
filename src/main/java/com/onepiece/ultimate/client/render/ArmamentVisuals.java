@@ -37,8 +37,26 @@ public final class ArmamentVisuals {
     private static final Int2IntOpenHashMap ACTIVATED_AT = new Int2IntOpenHashMap();
     /** Players we have seen without the coating – only for them is the activation animated. */
     private static final it.unimi.dsi.fastutil.ints.IntOpenHashSet SEEN_INACTIVE = new it.unimi.dsi.fastutil.ints.IntOpenHashSet();
-    private static final Vector3f FLAME_DUST = new Vector3f(0.55f, 0.2f, 1f);
     private static final Vector3f DARK_DUST = new Vector3f(0.08f, 0.02f, 0.15f);
+
+    /** Colours of the coating: the classic violet-flame Busoshoku, or Gear Fourth's crimson-edged version. */
+    public enum Palette {
+        VIOLET(0.42f, 0.14f, 0.8f, 0.92f, 0.9f, 1f, new Vector3f(0.55f, 0.2f, 1f)),
+        CRIMSON(0.6f, 0.05f, 0.1f, 0.9f, 0.55f, 0.6f, new Vector3f(0.95f, 0.15f, 0.2f));
+        final float fr, fg, fb, gr, gg, gb;
+        final Vector3f dust;
+        Palette(float fr, float fg, float fb, float gr, float gg, float gb, Vector3f dust) {
+            this.fr = fr; this.fg = fg; this.fb = fb; this.gr = gr; this.gg = gg; this.gb = gb; this.dust = dust;
+        }
+    }
+
+    public static Palette palette(Player p) {
+        OPPlayerData d = OPCapabilities.getOrNull(p);
+        if (d == null) return Palette.VIOLET;
+        boolean gearFourth = d.isToggleActive(com.onepiece.ultimate.fruit.gomu.GomuAbilities.BOUNDMAN.id())
+                || d.isToggleActive(com.onepiece.ultimate.fruit.gomu.GomuAbilities.SNAKEMAN.id());
+        return gearFourth ? Palette.CRIMSON : Palette.VIOLET;
+    }
 
     public static boolean active(Player p) {
         OPPlayerData d = OPCapabilities.getOrNull(p);
@@ -72,7 +90,7 @@ public final class ArmamentVisuals {
                     int side = r.nextBoolean() ? 1 : -1;
                     double x = p.getX() - Math.cos(yaw) * 0.38 * side, z = p.getZ() - Math.sin(yaw) * 0.38 * side;
                     double y = p.getY() + 0.7 + r.nextFloat() * 0.8;
-                    mc.level.addParticle(new DustParticleOptions(r.nextBoolean() ? FLAME_DUST : DARK_DUST, 0.9f + r.nextFloat() * 0.6f),
+                    mc.level.addParticle(new DustParticleOptions(r.nextBoolean() ? palette(p).dust : DARK_DUST, 0.9f + r.nextFloat() * 0.6f),
                             x, y, z, 0, 0.04, 0);
                 }
             }
@@ -98,6 +116,7 @@ public final class ArmamentVisuals {
     public static void render(PoseStack ps, MultiBufferSource buffers, int light, AbstractClientPlayer player, float partial, ModelPart... parts) {
         float pr = progress(player, partial);
         float age = player.tickCount + partial;
+        Palette pal = palette(player);
 
         // Order matters: the aura is an inflated copy that writes depth, so the solid coating must be drawn first.
         // 1. hardening to black, 2. polished gloss
@@ -107,16 +126,17 @@ public final class ArmamentVisuals {
             for (ModelPart part : parts) if (part.visible) part.render(ps, black, light, OverlayTexture.NO_OVERLAY, 0.035f, 0.025f, 0.06f, 0.97f * hard);
             VertexConsumer gloss = buffers.getBuffer(RenderType.entityTranslucentEmissive(GLOSS));
             float shine = hard * (0.75f + 0.25f * Mth.sin(age * 0.12f));
-            for (ModelPart part : parts) if (part.visible) part.render(ps, gloss, light, OverlayTexture.NO_OVERLAY, 0.92f, 0.9f, 1f, shine);
+            for (ModelPart part : parts) if (part.visible) part.render(ps, gloss, light, OverlayTexture.NO_OVERLAY, pal.gr, pal.gg, pal.gb, shine);
         }
 
         // 3. flame aura on top (additive) (strong during activation, faint edge afterwards)
         // additive blending: colour is the brightness of the flames
-        float flame = pr < 1f ? Mth.sin(pr * Mth.PI) * 0.75f + (1f - pr) * 0.15f : 0.10f + 0.05f * Mth.sin(age * 0.35f);
+        float idle = pal == Palette.CRIMSON ? 0.11f + 0.05f * Mth.sin(age * 0.5f) : 0.10f + 0.05f * Mth.sin(age * 0.35f);
+        float flame = pr < 1f ? Mth.sin(pr * Mth.PI) * 0.75f + (1f - pr) * 0.15f : idle;
         if (flame > 0.01f) {
             VertexConsumer swirl = buffers.getBuffer(RenderType.energySwirl(FLAME, (age * 0.011f) % 1f, (age * 0.035f) % 1f));
             float inflate = 1.05f + 0.12f * Math.min(1f, flame);
-            for (ModelPart part : parts) renderScaled(part, ps, swirl, light, inflate, 0.42f * flame, 0.14f * flame, 0.8f * flame, 1f);
+            for (ModelPart part : parts) renderScaled(part, ps, swirl, light, inflate, pal.fr * flame, pal.fg * flame, pal.fb * flame, 1f);
         }
 
     }

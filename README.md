@@ -12,7 +12,7 @@ Mod de ação/RPG de One Piece para **Minecraft 1.20.1 / Forge 47.4.x** (Java 17
 | 4. Sistema de habilidades | ✅ INSTANT / CHARGE / HOLD / TOGGLE, cooldown, energia, maestria, variantes por transformação |
 | 5. Fruta completa de demonstração | ✅ **Gomu Gomu no Mi** (7 técnicas + 3 variantes Jet + passivas) |
 | 6. Haki | ✅ Busoshoku, Kenbunshoku e Haoshoku com níveis 1–10, versões avançadas (Emissão, Visão do Futuro, Infusão do Rei) |
-| 7. Animações e transformações | ✅ framework de transformações, Gear 2/4 (Boundman, Snakeman)/5, Zoan Fênix (híbrida e completa), 68 animações com 1ª pessoa |
+| 7. Animações e transformações | ✅ framework de transformações, Gear 2/4 (Boundman, Snakeman)/5, Zoan Fênix (híbrida e completa), 80 animações com 1ª pessoa |
 | 8. Chefes | ⏳ |
 | 9. Destruição e efeitos | 🟡 crateras, rachaduras, ondas de choque, túneis, árvores derrubadas, detritos, restauração opcional |
 | 10. HUD, progressão, multiplayer | 🟡 HUD de habilidades, ficha do personagem, níveis/atributos/maestria, sincronização cliente-servidor |
@@ -68,13 +68,22 @@ Segure **`M`** para abrir a **roda de transformações**. Aponte o mouse para um
 | Forma | Requisito | Efeito | Técnicas que mudam |
 |---|---|---|---|
 | Gear Second | maestria 30 | +35% de dano e velocidade, pele vermelha, vapor | Jet Pistol, Jet Gatling, Jet Bazooka |
-| Gear Fourth: **Boundman** | maestria 60 + Armamento Nv4 | corpo enorme e revestido, quica sem parar, 3 quiques no ar, +80% de dano, −40% de dano recebido, hitbox maior. **Ao terminar: Haki esgotado por 30 s** | Kong Gun, Kong Organ, Leo Bazooka, King Kong Gun |
-| Gear Fourth: **Snakeman** | maestria 70 + Armamento Nv4 | mais rápido, dash no ar, socos **teleguiados** | Jet Culverin, Black Mamba, King Cobra |
-| **Gear Fifth** | maestria 100 | branco radiante, tambores da libertação, 5 pulos no ar; tudo que é atingido **vira borracha e quica**, o terreno balança em vez de quebrar. Deixa o corpo exausto | Dawn Gun, Dawn Whip, Dawn Rocket, Bajrang Gun |
+| Gear Fourth: **Boundman** | maestria 60 + Armamento Nv4 | corpo enorme e revestido, quica sem parar, 3 quiques no ar, +80% de dano, −40% de dano recebido, hitbox maior. **Ao terminar: Haki esgotado por 30 s** | Kong Gun, Culverin, Kong Organ, Rhino Schneider, Leo Bazooka, King Kong Gun |
+| Gear Fourth: **Snakeman** | maestria 70 + Armamento Nv4 | mais rápido, dash no ar, socos **teleguiados** e serpenteantes; silhueta própria (magra, cabelo espetado, pontos vermelhos) | Jet Culverin, Hydra, Black Mamba, King Cobra |
+| **Gear Fifth** | maestria 100 | branco radiante, tambores da libertação, 5 pulos no ar; tudo que é atingido **vira borracha e quica**, o terreno balança em vez de quebrar. Cabelo de nuvem, anel de nuvens no pescoço, rosto de desenho que gargalha. Deixa o corpo exausto | Mogura Pistol, Gigant, Dawn Gatling, Dawn Rocket, Kaminari, Bajrang Gun |
 | Fênix **Híbrida** | maestria 15 | asas de chama azul, plana ao cair, bate as asas no ar | — |
 | Fênix **Completa** | maestria 30 | modelo de fênix próprio, **voo real**, hitbox menor | — |
 
 **Tori Tori no Mi, Modelo Fênix** (Zoan mítica): Garra da Fênix, Onda de Chama Azul, Chamas da Regeneração (cura você e aliados) e Marca da Fênix (mergulho do alto). Passivo: as chamas regeneram a maior parte do dano recebido pagando energia, **exceto dano de quem usa Busoshoku**.
+
+### Correções e aprimoramentos (revisão das formas)
+- **Gear 4**: revestimento preto com bordas e brilho vermelhos; tatuagens de chama vermelhas (Boundman) e pontos vermelhos (Snakeman); quique contínuo com compressão/expansão; animação de ativação própria do Snakeman.
+- **Gear 5**: **Gigant** aumenta a hitbox real 2,6× (alcance +3, passos geram ondas de choque) com crescimento elástico; câmera de 3ª pessoa afasta automaticamente; pose cartunesca no ar.
+- **Kaminari** (carregue): raios visuais + dano/paralisia em área, cratera e rachaduras. **Mogura Pistol**: o punho cava e irrompe sob o alvo.
+- **Fênix completa**: modelo novo (pescoço, crista, penas primárias, cauda longa com plumas articuladas), estados de voo (subida com batidas rápidas, cruzeiro lento, planar/mergulho com asas travadas, asas dobradas no chão), inclinação do corpo pela trajetória, transição de crescimento ao transformar e rastros de vento. Golpe de garra com animação própria. Nova textura da fruta (abacaxi de chamas azuis com coroa dourada) e modelo de item que faltava.
+- Ombros ficam presos ao tronco quando a animação gira o corpo (braços "soltos" em 3ª pessoa corrigidos); espadas seguem o braço animado em 1ª pessoa.
+- Testes automáticos: 26 (Hydra multi-alvo, Rhino Schneider, Kaminari em área + paralisia, Gigant cresce e volta).
+- Roteiro visual: `./gradlew runClient -Pautotest=moves`.
 
 ## Primeira pessoa e menu
 - **Primeira pessoa:** com a mão vazia e o modo de combate (ou um poder) ativo, os dois braços aparecem e seguem as mesmas animações do corpo: guarda, jabs alternados, gancho, bloqueio cruzado, cargas, Bazooka, Gigant inflado e Haki. A pausa de impacto e as transições funcionam igual. Os revestimentos de Haki e do Gear Second também aparecem nos braços. Segurando um item, o jogo usa a renderização vanilla.

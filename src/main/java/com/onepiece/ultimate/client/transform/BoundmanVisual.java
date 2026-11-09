@@ -44,15 +44,15 @@ class BoundmanVisual implements TransformationVisual {
     }
 
     @Override
-    public float rootScale() {
-        return 1.12f;
+    public float rootScale(AbstractClientPlayer player, float partial) {
+        return 1.14f;
     }
 
     @Override
     public void renderLayer(PoseStack ps, MultiBufferSource buffers, int light, AbstractClientPlayer player,
                             PlayerModel<AbstractClientPlayer> model, float partial, float age) {
-        float glow = 0.75f + 0.2f * Mth.sin(age * 0.2f);
-        model.renderToBuffer(ps, buffers.getBuffer(RenderType.entityTranslucentEmissive(PATTERN)), light, OverlayTexture.NO_OVERLAY, 1f, 0.2f, 0.15f, glow);
+        float glow = 0.8f + 0.2f * Mth.sin(age * 0.25f);
+        model.renderToBuffer(ps, buffers.getBuffer(RenderType.entityTranslucentEmissive(PATTERN)), light, OverlayTexture.NO_OVERLAY, 1f, 0.16f, 0.12f, glow);
     }
 
     @Override

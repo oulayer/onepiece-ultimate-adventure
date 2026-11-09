@@ -605,4 +605,95 @@ public final class OPGameTests {
         check(h, p.getBbHeight() > 1.7f, "body size must be restored");
         h.succeed();
     }
+
+    private static FakePlayer gomuUser(GameTestHelper h, double x, double z, float yaw, int mastery) {
+        FakePlayer p = fake(h, x, 2, z, yaw);
+        OPPlayerData d = data(h, p);
+        d.setFruit(DevilFruits.GOMU_GOMU_ID);
+        d.setMasteryXp(OPPlayerData.totalXpForMastery(mastery));
+        d.progression().set(PlayerStat.STAMINA, 100);
+        setHaki(p, d, HakiType.ARMAMENT, 4);
+        d.setEnergy(d.maxEnergy());
+        return p;
+    }
+
+    @GameTest(template = ARENA, batch = "launchers", timeoutTicks = 80)
+    public static void hydraHitsEveryTarget(GameTestHelper h) {
+        FakePlayer p = gomuUser(h, 4.5, 1.5, 0, 70);
+        OPPlayerData d = data(h, p);
+        Husk a = target(h, 1.5, 2, 9.5), b = target(h, 4.5, 2, 11.5), c = target(h, 7.5, 2, 9.5);
+        float ha = a.getHealth(), hb = b.getHealth(), hc = c.getHealth();
+        check(h, AbilityManager.press(p, d, FORMS, 2) == AbilityManager.Result.SUCCESS, "Snakeman");
+        skipActivation(d);
+        check(h, AbilityManager.abilityInSlot(d, 1) == GomuAbilities.HYDRA, "Whip must become Hydra");
+        check(h, AbilityManager.press(p, d, 1) == AbilityManager.Result.SUCCESS, "Hydra refused");
+        h.onEachTick(() -> PlayerTicker.tick(p, d));
+        h.succeedWhen(() -> {
+            check(h, a.getHealth() < ha, "left target untouched");
+            check(h, b.getHealth() < hb, "middle target untouched");
+            check(h, c.getHealth() < hc, "right target untouched");
+        });
+    }
+
+    @GameTest(template = ARENA, batch = "launchers", timeoutTicks = 60)
+    public static void rhinoSchneiderRams(GameTestHelper h) {
+        FakePlayer p = gomuUser(h, 4.5, 2.5, 0, 70);
+        OPPlayerData d = data(h, p);
+        Husk target = target(h, 4.5, 2, 4.5);
+        float start = target.getHealth();
+        check(h, AbilityManager.press(p, d, FORMS, 1) == AbilityManager.Result.SUCCESS, "Boundman");
+        skipActivation(d);
+        check(h, AbilityManager.abilityInSlot(d, 3) == GomuAbilities.RHINO_SCHNEIDER, "Rocket must become Rhino Schneider");
+        check(h, AbilityManager.press(p, d, 3) == AbilityManager.Result.SUCCESS, "Rhino Schneider refused");
+        h.onEachTick(() -> PlayerTicker.tick(p, d));
+        h.succeedWhen(() -> check(h, target.getHealth() <= start - 10f, "the ram should deal heavy damage: " + target.getHealth()));
+    }
+
+    @GameTest(template = ARENA, batch = "launchers", timeoutTicks = 80)
+    public static void kaminariStunsArea(GameTestHelper h) {
+        FakePlayer p = gomuUser(h, 4.5, 1.5, 0, 100);
+        p.setXRot(30f); // aim at the floor ~3 blocks ahead
+        OPPlayerData d = data(h, p);
+        Husk near = target(h, 4.5, 2, 5.5), side = target(h, 6.5, 2, 4.5);
+        float hn = near.getHealth(), hs = side.getHealth();
+        check(h, AbilityManager.press(p, d, FORMS, 3) == AbilityManager.Result.SUCCESS, "Gear Fifth");
+        skipActivation(d);
+        check(h, AbilityManager.abilityInSlot(d, 4) == GomuAbilities.KAMINARI, "Bazooka must become Kaminari");
+        check(h, AbilityManager.press(p, d, 4) == AbilityManager.Result.SUCCESS, "Kaminari refused");
+        int[] t = {0};
+        h.onEachTick(() -> {
+            PlayerTicker.tick(p, d);
+            if (++t[0] == 20) AbilityManager.release(p, d, 4);
+        });
+        h.succeedWhen(() -> {
+            check(h, near.getHealth() < hn && side.getHealth() < hs, "every enemy in the blast radius must be hit");
+            check(h, near.hasEffect(com.onepiece.ultimate.registry.ModEffects.STUNNED.get()), "Kaminari must paralyse");
+        });
+    }
+
+    @GameTest(template = ARENA, batch = "launchers", timeoutTicks = 60)
+    public static void gigantGrowsAndShrinks(GameTestHelper h) {
+        FakePlayer p = gomuUser(h, 4.5, 4.5, 0, 100);
+        OPPlayerData d = data(h, p);
+        float normal = p.getBbHeight();
+        check(h, AbilityManager.press(p, d, FORMS, 3) == AbilityManager.Result.SUCCESS, "Gear Fifth");
+        skipActivation(d);
+        check(h, AbilityManager.abilityInSlot(d, 1) == GomuAbilities.GIGANT, "Whip must become Gigant");
+        check(h, AbilityManager.press(p, d, 1) == AbilityManager.Result.SUCCESS, "Gigant refused");
+        int[] t = {0};
+        boolean[] grew = {false};
+        h.onEachTick(() -> {
+            PlayerTicker.tick(p, d);
+            t[0]++;
+            if (!grew[0] && d.giant()) {
+                check(h, p.getBbHeight() > normal * 2f, "the giant hitbox must really grow: " + p.getBbHeight());
+                grew[0] = true;
+                d.abilities.giantUntil = 0; // expire now
+            }
+        });
+        h.succeedWhen(() -> {
+            check(h, grew[0], "never became giant");
+            check(h, !d.giant() && Math.abs(p.getBbHeight() - normal) < 0.3f, "must shrink back: " + p.getBbHeight());
+        });
+    }
 }

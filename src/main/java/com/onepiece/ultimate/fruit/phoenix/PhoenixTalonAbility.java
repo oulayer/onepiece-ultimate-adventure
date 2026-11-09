@@ -36,7 +36,7 @@ public final class PhoenixTalonAbility extends Ability {
         Vec3 look = ctx.look();
         p.setDeltaMovement(look.x * 1.1, Math.max(0.2, look.y * 0.6 + 0.2), look.z * 1.1);
         p.hurtMarked = true;
-        ServerFx.animation(p, "kick_finisher");
+        ServerFx.animation(p, "phoenix_talon");
         ServerFx.sound(ctx.level(), p.position(), ModSounds.PHOENIX_FLAME.get(), 1f, 1.3f);
         Set<Integer> hit = new HashSet<>();
         for (int t = 3; t <= 7; t++) {

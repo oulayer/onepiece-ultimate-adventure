@@ -161,6 +161,7 @@ public final class ClientAutoTest {
     static {
         if ("fp".equals(MODE)) firstPersonCalibration();
         else if ("forms".equals(MODE)) formsRun();
+        else if ("moves".equals(MODE)) movesRun();
         else if ("phoenix".equals(MODE)) phoenixRun();
         else fullRun();
     }
@@ -311,12 +312,78 @@ public final class ClientAutoTest {
         at(t + 490, () -> Minecraft.getInstance().stop());
     }
 
+    /** Correction pass review: the Gear 4 / Gear 5 move set and the phoenix flight states, third and first person. */
+    private static void movesRun() {
+        int t = 60;
+        at(t, () -> server(ClientAutoTest::stage));
+        at(t + 5, () -> server(ClientAutoTest::stageHaki));
+        at(t + 8, () -> setFruit(com.onepiece.ultimate.fruit.DevilFruits.GOMU_GOMU_ID));
+        // Boundman: bounce + Rhino Schneider
+        at(t + 20, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 22, () -> form(1));
+        at(t + 62, () -> shot("m01_boundman_bounce_a"));
+        at(t + 66, () -> shot("m02_boundman_bounce_b"));
+        at(t + 68, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 70, () -> press(3));
+        at(t + 71, () -> release(3));
+        at(t + 76, () -> shot("m03_rhino_schneider"));
+        at(t + 90, () -> form(1));
+        at(t + 105, () -> setFruit(com.onepiece.ultimate.fruit.DevilFruits.GOMU_GOMU_ID));
+        // Snakeman: hair + Hydra
+        at(t + 110, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 112, () -> form(2));
+        at(t + 150, () -> shot("m04_snakeman_front"));
+        at(t + 152, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 154, () -> press(1));
+        at(t + 155, () -> release(1));
+        at(t + 160, () -> shot("m05_hydra"));
+        at(t + 175, () -> form(2));
+        at(t + 190, () -> setFruit(com.onepiece.ultimate.fruit.DevilFruits.GOMU_GOMU_ID));
+        // Gear Fifth: face/hair/clouds, jump, Mogura, Kaminari, Gigant
+        at(t + 195, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 197, () -> form(3));
+        at(t + 245, () -> shot("m06_gear_fifth_face"));
+        at(t + 247, () -> teleport(0, 4, 0, 0f));
+        at(t + 251, () -> shot("m07_gear_fifth_jump"));
+        at(t + 270, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 272, () -> press(0));
+        at(t + 273, () -> release(0));
+        at(t + 277, () -> shot("m08_mogura_pistol"));
+        at(t + 290, () -> camera(CameraType.FIRST_PERSON));
+        at(t + 292, () -> press(4));
+        at(t + 310, () -> shot("m09_kaminari_charge_fp"));
+        at(t + 314, () -> release(4));
+        at(t + 318, () -> shot("m10_kaminari_throw_fp"));
+        at(t + 322, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 326, () -> shot("m11_kaminari_impact"));
+        at(t + 340, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 342, () -> press(1));
+        at(t + 343, () -> release(1));
+        at(t + 349, () -> shot("m12_gigant_growing"));
+        at(t + 370, () -> shot("m13_gigant"));
+        at(t + 380, () -> form(3));
+        // Phoenix: transition and flight states
+        at(t + 400, () -> setFruit(com.onepiece.ultimate.fruit.DevilFruits.TORI_PHOENIX_ID));
+        at(t + 405, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 407, () -> form(1));
+        at(t + 412, () -> shot("m14_phoenix_transition"));
+        at(t + 440, () -> shot("m15_phoenix_ground"));
+        at(t + 442, () -> server(sp -> { sp.getAbilities().flying = true; sp.onUpdateAbilities(); sp.setDeltaMovement(0, 0.6, 0); sp.hurtMarked = true; }));
+        at(t + 444, () -> shot("m16_phoenix_climb"));
+        at(t + 455, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 460, () -> shot("m17_phoenix_hover"));
+        at(t + 470, () -> Minecraft.getInstance().stop());
+    }
+
     private static void phoenixRun() {
         int t = 60;
         at(t, () -> server(ClientAutoTest::stage));
         at(t + 8, () -> setFruit(com.onepiece.ultimate.fruit.DevilFruits.TORI_PHOENIX_ID));
+        at(t + 10, () -> teleport(0, 0, -20, 180f));
         at(t + 20, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 21, () -> shot("p0_human_front"));
         at(t + 22, () -> form(1));
+        at(t + 27, () -> shot("p0b_transition"));
         at(t + 60, () -> shot("p1_full_ground"));
         at(t + 62, () -> teleport(0, 6, 0, 0f));
         at(t + 64, () -> camera(CameraType.THIRD_PERSON_BACK));

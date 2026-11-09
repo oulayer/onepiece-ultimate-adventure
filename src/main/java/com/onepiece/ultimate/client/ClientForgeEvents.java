@@ -70,6 +70,12 @@ public final class ClientForgeEvents {
 
     @SubscribeEvent
     public static void cameraAngles(ViewportEvent.ComputeCameraAngles event) {
+        var cam = event.getCamera();
+        if (cam.isDetached() && cam.getEntity() instanceof net.minecraft.client.player.AbstractClientPlayer p) {
+            var visual = com.onepiece.ultimate.client.transform.TransformationVisuals.of(p);
+            float extra = visual == null ? 0f : visual.cameraDistanceBonus(p, (float) event.getPartialTick());
+            if (extra > 0.05f) cam.move(-cam.getMaxZoom(extra), 0, 0); // same wall-aware pull-back vanilla uses
+        }
         CameraEffects.onCameraAngles(event);
     }
 

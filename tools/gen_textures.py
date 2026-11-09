@@ -209,10 +209,30 @@ icon_gigant(f"{G}/gomu_king_kong_gun.png")
 icon_pistol(f"{G}/gomu_jet_culverin.png", (120, 25, 45), jet=True)
 icon_gatling(f"{G}/gomu_black_mamba.png", (120, 25, 45), jet=True)
 icon_bazooka(f"{G}/gomu_king_cobra.png", (120, 25, 45), jet=True)
-icon_pistol(f"{G}/gomu_dawn_gun.png", WHITE)
-icon_whip(f"{G}/gomu_dawn_whip.png")
 icon_rocket(f"{G}/gomu_dawn_rocket.png")
 icon_gigant(f"{G}/gomu_bajrang_gun.png")
+
+icon_rocket(f"{G}/gomu_rhino_schneider.png")
+icon_whip(f"{G}/gomu_culverin.png")
+icon_gatling(f"{G}/gomu_hydra.png", (120, 25, 45), jet=True)
+icon_gatling(f"{G}/gomu_dawn_gatling.png", WHITE)
+def icon_draw(path, draw, glow):
+    img = canvas(); d = ImageDraw.Draw(img); draw(d); finish(img, path, glow=glow)
+def _gigant(d):  # a tiny figure next to a colossal white silhouette
+    d.ellipse([46, 10, 98, 52], fill=WHITE); d.rounded_rectangle([36, 46, 108, 120], radius=18, fill=WHITE, outline=(120, 120, 130), width=4)
+    d.ellipse([14, 92, 26, 104], fill=SKIN); d.rectangle([16, 104, 24, 120], fill=(200, 40, 40))
+    for k in range(3): d.arc([28 - k * 8, 30 - k * 8, 116 + k * 8, 118 + k * 8], 200, 250, fill=(255, 255, 255), width=4)
+def _mogura(d):  # fist bursting up from cracked ground
+    d.rectangle([0, 84, 127, 127], fill=(120, 85, 50)); d.line([(20, 84), (40, 100), (30, 120)], fill=(60, 40, 20), width=5)
+    d.line([(108, 84), (90, 102), (100, 122)], fill=(60, 40, 20), width=5)
+    fist(d, 64, 46, 26, WHITE + (255,)); d.rectangle([52, 66, 76, 92], fill=WHITE, outline=(40, 20, 10), width=4)
+    for k in range(5): d.polygon([(34 + k * 15, 84), (40 + k * 15, 70), (46 + k * 15, 84)], fill=(160, 120, 70))
+def _kaminari(d):  # a hand gripping a lightning bolt
+    bolt = [(70, 4), (40, 62), (62, 62), (46, 124), (96, 48), (72, 48), (92, 4)]
+    d.polygon(bolt, fill=(255, 245, 140), outline=(255, 255, 255)); fist(d, 66, 64, 16, WHITE + (255,))
+icon_draw(f"{G}/gomu_gigant.png", _gigant, (255, 255, 255))
+icon_draw(f"{G}/gomu_mogura_pistol.png", _mogura, (255, 255, 255))
+icon_draw(f"{G}/gomu_kaminari.png", _kaminari, (255, 240, 120))
 
 def recolor(path, tint, mix=0.75):
     im = Image.open(path).convert("RGBA"); px = im.load()
@@ -222,9 +242,10 @@ def recolor(path, tint, mix=0.75):
             if a: px[x, y] = tuple(int(c * (1 - mix) + t * mix) for c, t in zip((r, g, b), tint)) + (a,)
     im.save(path)
 recolor(f"{G}/gomu_king_kong_gun.png", (60, 25, 30), 0.6)
-recolor(f"{G}/gomu_dawn_whip.png", WHITE, 0.6)
 recolor(f"{G}/gomu_dawn_rocket.png", WHITE, 0.6)
 recolor(f"{G}/gomu_bajrang_gun.png", WHITE, 0.55)
+recolor(f"{G}/gomu_rhino_schneider.png", (60, 25, 30), 0.6)
+recolor(f"{G}/gomu_culverin.png", (60, 25, 30), 0.6)
 
 def icon_form(path, body, accent, symbol):
     img = canvas(); d = ImageDraw.Draw(img)
@@ -273,32 +294,128 @@ icon_simple(f"{G}/phoenix_regeneration.png", lambda d: (flame(d, 64, 70, 48, BLU
 icon_simple(f"{G}/phoenix_dive.png", lambda d: (d.polygon([(64, 118), (36, 40), (64, 60), (92, 40)], fill=BLUE, outline=DEEP), flame(d, 64, 26, 20, DEEP)))
 
 # Phoenix Zoan fruit (16x16) and textures
-fruit((70, 190, 245), (25, 90, 200), (210, 245, 255), f"{A}/item/tori_tori_no_mi_phoenix.png")
-S = 64
-img = Image.new("RGBA", (S, S), (0, 0, 0, 0)); px = img.load()
-for y in range(S):
-    for x in range(S):
-        n = 0.5 + 0.5 * math.sin(x * 0.7 + math.sin(y * 0.5) * 2) * math.cos(y * 0.35)
-        r, g, b = int(40 + 90 * n), int(150 + 90 * n), 255
-        px[x, y] = (r, g, b, int(150 + 105 * n))
-d = ImageDraw.Draw(img)
-d.rectangle([48, 0, 63, 15], fill=GOLD + (255,))
-save(img, f"{E}/phoenix.png")
+def phoenix_fruit(path):
+    """32x32: a tall pineapple-shaped fruit made of swirling cyan flames with a golden leaf crown."""
+    S = 32
+    img = Image.new("RGBA", (S, S), (0, 0, 0, 0)); px = img.load()
+    cx, cy, rx, ry = 15.5, 19.5, 9.0, 11.0
+    for y in range(S):
+        for x in range(S):
+            dx, dy = (x - cx) / rx, (y - cy) / ry
+            dd = dx * dx + dy * dy
+            if dd > 1: continue
+            # diagonal pineapple scales, each a little swirl of flame
+            a = (x + y) * 0.9; b = (x - y) * 0.9
+            cell = math.sin(a) * math.sin(b)
+            swirl = math.sin(math.atan2(math.sin(b), math.sin(a)) * 2 + dd * 4)
+            shade = 1.05 - 0.45 * (dx + 1) / 2 - 0.15 * dy
+            base = (60, 200, 250) if swirl > 0 else (25, 120, 220)
+            if cell > 0.55: base = (190, 245, 255)
+            if dd > 0.8: base = (15, 70, 170)
+            px[x, y] = tuple(max(0, min(255, int(c * shade))) for c in base) + (255,)
+    d = ImageDraw.Draw(img)
+    GOLDD, GOLDL = (200, 140, 20, 255), (255, 215, 70, 255)
+    for (x0, lean, h) in [(15.5, 0, 9), (12, -4, 7), (19, 4, 7), (9.5, -6, 5), (21.5, 6, 5)]:
+        d.polygon([(x0 - 1.6, 10), (x0 + lean, 10 - h), (x0 + 1.6, 10)], fill=GOLDL, outline=GOLDD)
+    for (x, y) in [(10, 14), (11, 13), (12, 13)]: px[x, y] = (235, 255, 255, 255)
+    save(img, path)
+phoenix_fruit(f"{A}/item/tori_tori_no_mi_phoenix.png")
 
-# Gear Fourth markings on the skin UV map: red flame lines on body, arms and legs
+
+# Gear Fourth markings on the skin UV map (64x64). White = tinted red at render time.
+# Boundman: thick flame tattoos licking up the chest, over the shoulders and down the forearms and shins.
+def box_faces(u, v, w, dd, h):
+    """(x0, y0, width) of the right, front, left and back faces of a skin box, plus top/bottom faces."""
+    return [(u, v + dd, dd), (u + dd, v + dd, w), (u + dd + w, v + dd, dd), (u + 2 * dd + w, v + dd, w)], h
+def flame_tongue(d, x, ybot, height, width, col):
+    """A tapered flame line with a curl: width pixels at the bottom, a point at the top."""
+    pts_l, pts_r = [], []
+    for k in range(height + 1):
+        t = k / max(1, height)
+        sway = math.sin(t * 3.4 + x) * 1.2
+        half = max(0.0, width * (1 - t) / 2)
+        pts_l.append((x + sway - half, ybot - k)); pts_r.append((x + sway + half, ybot - k))
+    d.polygon(pts_l + pts_r[::-1], fill=col)
 img = Image.new("RGBA", (64, 64), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+W = (255, 255, 255, 255)
 rnd = random.Random(4)
-def flames_in(x0, y0, x1, y1):
-    for k in range(2):
-        x = rnd.randint(x0, x1 - 1)
-        pts = [(x, y1 - 1)]
-        for yy in range(y1 - 2, y0 - 1, -2):
-            x = max(x0, min(x1 - 1, x + rnd.choice((-1, 0, 1))))
-            pts.append((x, yy))
-        d.line(pts, fill=(255, 255, 255, 255), width=1)
-for (x0, y0, x1, y1) in [(20, 20, 28, 32), (32, 20, 40, 32), (40, 20, 56, 32), (32, 52, 48, 64), (0, 20, 16, 32), (16, 52, 32, 64)]:
-    flames_in(x0, y0, x1, y1)
+# body front (20..28, 20..32) and jacket front (20..28, 36..48): tongues rising from the belly to the collar bones
+for (u, v) in [(16, 16), (16, 32)]:
+    faces, h = box_faces(u, v, 8, 4, 12)
+    for (fx, fy, fw) in faces:
+        for k in range(max(2, fw // 2)):
+            x = fx + 0.5 + k * fw / max(2, fw // 2) + rnd.uniform(-0.3, 0.3)
+            flame_tongue(d, x, fy + h - 1, rnd.randint(5, 10), 2.4, W)
+    d.line([(u + 4, v + 4 + 1), (u + 4 + 7, v + 4 + 1)], fill=W)  # collar band over the shoulders
+# arms (right 40,16 / left 32,48 and their sleeves): flames from the wrist up to the elbow, a ring at the shoulder
+for (u, v) in [(40, 16), (40, 32), (32, 48), (48, 48)]:
+    faces, h = box_faces(u, v, 4, 4, 12)
+    for (fx, fy, fw) in faces:
+        for k in range(2):
+            flame_tongue(d, fx + 1 + k * 2, fy + h - 1, rnd.randint(4, 7), 1.8, W)
+        d.line([(fx, fy + 1), (fx + fw - 1, fy + 1)], fill=W)
+# legs: short flames on the shins
+for (u, v) in [(0, 16), (0, 32), (16, 48), (0, 48)]:
+    faces, h = box_faces(u, v, 4, 4, 12)
+    for (fx, fy, fw) in faces:
+        flame_tongue(d, fx + fw / 2, fy + h - 1, rnd.randint(4, 6), 2.2, W)
 save(img, f"{E}/gear_fourth_pattern.png")
+
+# Snakeman: rows of red dots along the arms and a dotted line down the chest (no flames – a different look)
+img = Image.new("RGBA", (64, 64), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+for (u, v, w, dd) in [(40, 16, 4, 4), (40, 32, 4, 4), (32, 48, 4, 4), (48, 48, 4, 4), (0, 16, 4, 4), (0, 32, 4, 4), (16, 48, 4, 4), (0, 48, 4, 4)]:
+    faces, h = box_faces(u, v, w, dd, 12)
+    for (fx, fy, fw) in faces:
+        for yy in range(fy + 2, fy + h - 1, 3):
+            d.point((fx + fw // 2 - (1 if (yy // 3) % 2 else 0), yy), fill=W)
+for (u, v) in [(16, 16), (16, 32)]:
+    for yy in range(v + 6, v + 16, 2):
+        d.point((u + 4 + 3, yy), fill=W); d.point((u + 4 + 4, yy), fill=W)
+    for xx in range(u + 4, u + 12, 2):
+        d.point((xx, v + 5), fill=W)
+save(img, f"{E}/snakeman_pattern.png")
+
+# Gear Fifth cartoon face, painted on the hat layer's front (40..47, 8..15): huge round eyes and a wide grin;
+# the "laugh" frame has squeezed ^ ^ eyes and an open laughing mouth.
+def g5_face(laugh, path):
+    img = Image.new("RGBA", (64, 64), (0, 0, 0, 0)); px = img.load()
+    K, Wt, R, T = (20, 20, 20, 255), (255, 255, 255, 255), (200, 40, 50, 255), (255, 120, 140, 255)
+    ox, oy = 40, 8
+    if laugh:
+        for (x, y) in [(1, 3), (2, 2), (3, 3), (4, 3), (5, 2), (6, 3)]:
+            px[ox + x, oy + y] = K
+        for x in range(1, 7): px[ox + x, oy + 5] = K
+        for x in range(2, 6): px[ox + x, oy + 6] = R
+        px[ox + 3, oy + 7] = T; px[ox + 4, oy + 7] = T
+        px[ox + 1, oy + 6] = K; px[ox + 6, oy + 6] = K
+    else:
+        for (ex) in (1, 5):
+            for y in (2, 3):
+                for x in (ex, ex + 1): px[ox + x, oy + y] = Wt
+            px[ox + ex + (1 if ex == 1 else 0), oy + 3] = K
+        for x in range(1, 7): px[ox + x, oy + 5] = K
+        px[ox + 0, oy + 4] = K; px[ox + 7, oy + 4] = K
+        for x in range(2, 6): px[ox + x, oy + 6] = Wt
+    save(img, path)
+g5_face(False, f"{E}/gear5_face.png")
+g5_face(True, f"{E}/gear5_face_laugh.png")
+
+# Phoenix feathers: overlapping scale-shaped feathers in cyan/blue with yellow-gold flame tips (64x64 atlas)
+S = 64
+img = Image.new("RGBA", (S, S), (0, 0, 0, 0)); d = ImageDraw.Draw(img)
+for y in range(-4, S + 4, 4):
+    for x in range(-4, S + 4, 4):
+        ox = 2 if (y // 4) % 2 else 0
+        n = 0.5 + 0.5 * math.sin(x * 0.31 + y * 0.17)
+        col = (int(30 + 70 * n), int(140 + 90 * n), 255, 235)
+        d.ellipse([x + ox - 3, y - 3, x + ox + 3, y + 4], fill=col, outline=(20, 80, 200, 255))
+for x in range(0, S, 3):  # gold flame tips on the trailing edge of the wing/tail strips (rows 33..35, 53..55)
+    for y0 in (33, 53):
+        d.polygon([(x, y0 + 2), (x + 1.5, y0 - 1), (x + 3, y0 + 2)], fill=(255, 220, 90, 255))
+d.rectangle([48, 0, 63, 15], fill=GOLD + (255,))  # beak/legs
+d.rectangle([28, 0, 47, 9], fill=(40, 120, 240, 255))  # head
+for (x, y) in [(36, 4), (42, 4)]: d.point((x, y), fill=(255, 240, 120, 255))
+save(img, f"{E}/phoenix.png")
 
 # ------------------------------------------------------------------ particles
 P = f"{A}/particle"

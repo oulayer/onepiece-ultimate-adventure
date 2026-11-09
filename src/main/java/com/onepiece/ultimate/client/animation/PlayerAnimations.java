@@ -129,24 +129,23 @@ public final class PlayerAnimations {
     public static boolean applyRoot(Player player, PoseStack stack, float partial) {
         AnimationController c = CONTROLLERS.get(player.getId());
         var visual = com.onepiece.ultimate.client.transform.TransformationVisuals.of(player);
-        float formScale = visual == null ? 1f : visual.rootScale();
-        if ((c == null || c.isIdle()) && formScale == 1f) return false;
-        if (c != null && !c.isIdle()) c.applyRoot(POSE, partial);
+        float formScale = visual == null || !(player instanceof net.minecraft.client.player.AbstractClientPlayer acp) ? 1f : visual.rootScale(acp, partial);
+        boolean animated = c != null && !c.isIdle();
+        if (!animated && formScale == 1f) return false;
+        if (animated) c.applyRoot(POSE, partial);
         else POSE.reset();
-        if (formScale != 1f) {
-            int o = Bone.ROOT.ordinal() * Pose.STRIDE;
-            POSE.v[o + 6] *= formScale;
-            POSE.v[o + 7] *= formScale;
-            POSE.v[o + 8] *= formScale;
-        }
         float rx = POSE.get(Bone.ROOT, 0), ry = POSE.get(Bone.ROOT, 1), rz = POSE.get(Bone.ROOT, 2);
         float px = POSE.get(Bone.ROOT, 3), py = POSE.get(Bone.ROOT, 4), pz = POSE.get(Bone.ROOT, 5);
         float sx = POSE.get(Bone.ROOT, 6), sy = POSE.get(Bone.ROOT, 7), sz = POSE.get(Bone.ROOT, 8);
-        if (rx == 0 && ry == 0 && rz == 0 && px == 0 && py == 0 && pz == 0 && sx == 1 && sy == 1 && sz == 1) return false;
+        boolean posed = !(rx == 0 && ry == 0 && rz == 0 && px == 0 && py == 0 && pz == 0 && sx == 1 && sy == 1 && sz == 1);
+        if (!posed && formScale == 1f) return false;
 
         float bodyYaw = Mth.rotLerp(partial, player.yBodyRotO, player.yBodyRot);
-        float pivot = c == null || c.isIdle() ? 0f : c.rootPivot();
+        float pivot = animated ? c.rootPivot() : 0f;
         stack.pushPose();
+        // The form's size grows from the feet so a giant never sinks into the ground, whatever the animation pivot.
+        if (formScale != 1f) stack.scale(formScale, formScale, formScale);
+        if (!posed) return true;
         // Work in the body's frame: +X right, +Y up, -Z forward.
         stack.mulPose(Axis.YP.rotationDegrees(180f - bodyYaw));
         stack.translate(px / 16f, py / 16f, -pz / 16f);

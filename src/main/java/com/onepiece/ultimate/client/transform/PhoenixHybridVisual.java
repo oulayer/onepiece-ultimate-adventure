@@ -55,5 +55,20 @@ final class PhoenixHybridVisual implements TransformationVisual {
         int side = p.getRandom().nextBoolean() ? 1 : -1;
         mc.level.addParticle(ParticleTypes.SOUL_FIRE_FLAME, p.getX() - Math.cos(yaw) * 0.5 * side, p.getY() + 1.2, p.getZ() - Math.sin(yaw) * 0.5 * side,
                 0, 0.02, 0);
+        wind(p, 1.4);
+    }
+
+    /** Wind streaks peeling off the wing tips when flying fast (drawn for onlookers, never in the flyer's own view). */
+    static void wind(AbstractClientPlayer p, double span) {
+        var mc = Minecraft.getInstance();
+        if (mc.level == null || p.onGround()) return;
+        double vx = p.getX() - p.xo, vy = p.getY() - p.yo, vz = p.getZ() - p.zo;
+        double speed = Math.sqrt(vx * vx + vy * vy + vz * vz);
+        if (speed < 0.25 || p.tickCount % 2 != 0) return;
+        double yaw = Math.toRadians(p.yBodyRot);
+        for (int side : new int[]{1, -1}) {
+            double x = p.getX() - Math.cos(yaw) * span * side, z = p.getZ() - Math.sin(yaw) * span * side;
+            mc.level.addParticle(ParticleTypes.CLOUD, x, p.getY() + 0.9, z, -vx * 0.25, -vy * 0.25, -vz * 0.25);
+        }
     }
 }
