@@ -33,7 +33,9 @@ Os GameTests cobrem (Haki): despertar por nível/potencial e treino, travas (gau
 | Tecla | Ação |
 |---|---|
 | `G` | Liga/desliga o **modo de combate** (clique esquerdo = combo leve, direito = ataque pesado carregável, apenas com mão vazia ou lâmina) |
-| `Z X C V B N M` | Habilidades 1–7 da fruta (segurar para técnicas de carga/canalização) |
+| `Z X C V B N` | Técnicas 1–6 da fruta (segurar para técnicas de carga/canalização) |
+| `M` (segurar) | Roda de transformações: aponte e solte para ligar/desligar uma forma |
+| `Espaço` no ar | Mecânica da forma ativa (quique, dash aéreo, bater asas) |
 | `Alt esquerdo` | Dash direcional / esquiva (i-frames; esquivar no tempo certo = **esquiva perfeita**) |
 | `R` (segurar) | Bloquear; bloquear logo antes do golpe = **parry** |
 | `K` | Ficha do personagem (atributos, maestria, lista de técnicas, Haki) |
