@@ -160,6 +160,7 @@ public final class ClientAutoTest {
 
     static {
         if ("fp".equals(MODE)) firstPersonCalibration();
+        else if ("forms".equals(MODE)) formsRun();
         else fullRun();
     }
 
@@ -222,6 +223,91 @@ public final class ClientAutoTest {
         });
         at(t + 430, () -> shot("menu_3_haki"));
         at(t + 440, () -> Minecraft.getInstance().stop());
+    }
+
+    private static void form(int slot) {
+        OPNetwork.sendToServer(new AbilityInputPacket(com.onepiece.ultimate.ability.AbilityBars.TRANSFORM, slot, true));
+        OPNetwork.sendToServer(new AbilityInputPacket(com.onepiece.ultimate.ability.AbilityBars.TRANSFORM, slot, false));
+    }
+
+    private static void setFruit(net.minecraft.resources.ResourceLocation fruit) {
+        server(sp -> OPCapabilities.get(sp).ifPresent(d -> {
+            com.onepiece.ultimate.ability.AbilityManager.cancelAll(sp, d);
+            d.setFruit(fruit);
+            d.setMasteryXp(OPPlayerData.totalXpForMastery(100));
+            d.progression().set(com.onepiece.ultimate.data.PlayerStat.STAMINA, 100);
+            d.setEnergy(d.maxEnergy());
+            d.cooldowns().clear();
+            d.hakiRuntime.exhaustedUntil = 0;
+            d.markFull();
+        }));
+    }
+
+    private static void teleport(double dx, double dy, double dz, float yaw) {
+        server(sp -> sp.teleportTo(sp.serverLevel(), sp.getX() + dx, sp.getY() + dy, sp.getZ() + dz, yaw, 5f));
+    }
+
+    /** Stage 7 review: every transformation and its signature move, from the front and from behind. */
+    private static void formsRun() {
+        int t = 60;
+        at(t, () -> server(ClientAutoTest::stage));
+        at(t + 5, () -> server(ClientAutoTest::stageHaki));
+        at(t + 8, () -> setFruit(com.onepiece.ultimate.fruit.DevilFruits.GOMU_GOMU_ID));
+        at(t + 20, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        // Gear Fourth Boundman
+        at(t + 30, () -> form(1));
+        at(t + 45, () -> shot("f01_boundman_activation"));
+        at(t + 75, () -> shot("f02_boundman_front"));
+        at(t + 78, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 85, () -> shot("f03_boundman_back"));
+        at(t + 88, () -> press(0));
+        at(t + 100, () -> release(0));
+        at(t + 104, () -> shot("f04_kong_gun"));
+        at(t + 110, () -> camera(CameraType.FIRST_PERSON));
+        at(t + 118, () -> shot("f05_boundman_first_person"));
+        at(t + 120, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 125, () -> form(1)); // off -> exhaustion
+        at(t + 140, () -> setFruit(com.onepiece.ultimate.fruit.DevilFruits.GOMU_GOMU_ID));
+        // Snakeman
+        at(t + 150, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 152, () -> form(2));
+        at(t + 190, () -> shot("f06_snakeman_front"));
+        at(t + 192, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 194, () -> press(0));
+        at(t + 197, () -> shot("f07_jet_culverin"));
+        at(t + 210, () -> form(2));
+        at(t + 225, () -> setFruit(com.onepiece.ultimate.fruit.DevilFruits.GOMU_GOMU_ID));
+        // Gear Fifth
+        at(t + 235, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 237, () -> form(3));
+        at(t + 262, () -> shot("f08_gear_fifth_activation"));
+        at(t + 300, () -> shot("f09_gear_fifth_front"));
+        at(t + 302, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 304, () -> press(0));
+        at(t + 310, () -> shot("f10_dawn_gun"));
+        at(t + 330, () -> Minecraft.getInstance().setScreen(new com.onepiece.ultimate.client.screen.TransformationWheelScreen()));
+        at(t + 338, () -> shot("f11_wheel"));
+        at(t + 340, () -> Minecraft.getInstance().setScreen(null));
+        at(t + 342, () -> form(3));
+        // Phoenix
+        at(t + 360, () -> setFruit(com.onepiece.ultimate.fruit.DevilFruits.TORI_PHOENIX_ID));
+        at(t + 365, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 367, () -> form(0));
+        at(t + 395, () -> shot("f12_phoenix_hybrid_front"));
+        at(t + 397, () -> teleport(0, 12, 0, 0f));
+        at(t + 399, () -> camera(CameraType.THIRD_PERSON_BACK));
+        at(t + 412, () -> shot("f13_phoenix_glide"));
+        at(t + 420, () -> form(1));
+        at(t + 450, () -> shot("f14_phoenix_full_flying"));
+        at(t + 452, () -> camera(CameraType.THIRD_PERSON_FRONT));
+        at(t + 460, () -> shot("f15_phoenix_full_front"));
+        at(t + 470, () -> Minecraft.getInstance().setScreen(new CharacterScreen()));
+        at(t + 472, () -> {
+            if (Minecraft.getInstance().screen instanceof CharacterScreen cs) cs.selectTab(1);
+        });
+        at(t + 480, () -> shot("f16_menu_phoenix"));
+        at(t + 482, () -> Minecraft.getInstance().setScreen(null));
+        at(t + 490, () -> Minecraft.getInstance().stop());
     }
 
     private static void playPose(float[] v) {

@@ -39,7 +39,8 @@ public class TransformationWheelScreen extends Screen {
         open = Math.min(1f, open + 0.34f);
         if (minecraft == null) return;
         var key = KeyBindings.TRANSFORM.getKey();
-        if (key.getType() == InputConstants.Type.KEYSYM && !InputConstants.isKeyDown(minecraft.getWindow().getWindow(), key.getValue())) {
+        boolean scripted = System.getProperty("onepiece.autotest") != null; // dev visual test keeps the wheel open
+        if (!scripted && key.getType() == InputConstants.Type.KEYSYM && !InputConstants.isKeyDown(minecraft.getWindow().getWindow(), key.getValue())) {
             confirm();
         }
     }
